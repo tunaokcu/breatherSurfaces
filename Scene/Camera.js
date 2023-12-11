@@ -1,7 +1,7 @@
-import {flatten, vec3, mat4, lookAt, ortho} from "./Common/MV.js";
+import {flatten, vec3, mat4, lookAt, ortho} from "../Common/MV.js";
 
 export default class Camera{
-    constructor(gl, program, near=-10, far=10, radius=6, theta=0, phi=0.0,  left=-20.0, right=20.0, ytop=20.0, bottom=-20.0, at=vec3(0.0, 0.0, 0.0), up=vec3(0.0, 1.0, 0.0)){
+    constructor(gl, program, near=-10, far=10, radius=6, theta=0, phi=0.0,  left=-0.5, right=0.5, ytop=0.5, bottom=-0.5, at=vec3(0.0, 0.0, 0.0), up=vec3(0.0, 1.0, 0.0)){
         this.setMatrices(near, far, radius, theta, phi, left, right, ytop, bottom, at, up);
 
         this.modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
@@ -43,5 +43,21 @@ export default class Camera{
     setShaderMatrices(gl){
         gl.uniformMatrix4fv( this.modelViewMatrixLoc, false, flatten(this.modelViewMatrix) );
         gl.uniformMatrix4fv( this.projectionMatrixLoc, false, flatten(this.projectionMatrix) );
+    }
+
+    #ZOOM_FACTOR = 2;
+    zoomIn(){
+        console.log("left before is", this.left)
+        this.left /= this.#ZOOM_FACTOR;
+        this.right /= this.#ZOOM_FACTOR;
+        this.ytop /= this.#ZOOM_FACTOR;
+        this.bottom /= this.#ZOOM_FACTOR;
+        console.log("left now is", this.left)
+    }
+    zoomOut(){
+        this.left *= this.#ZOOM_FACTOR;
+        this.right *= this.#ZOOM_FACTOR;
+        this.ytop *= this.#ZOOM_FACTOR;
+        this.bottom *= this.#ZOOM_FACTOR;
     }
 }

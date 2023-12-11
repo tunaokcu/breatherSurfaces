@@ -36,7 +36,7 @@ export default class ParametricSurface{
 
     //should return an array
     sample(object=this){
-        return this.samplePoints(object); //to test
+        //let pointsInMesh = this.samplePoints(object); //to test
         let pointsInMesh = [];
 
         let i = 0;
@@ -48,15 +48,20 @@ export default class ParametricSurface{
             }
             i += 1;
         }
+        
+        console.log(pointsInMesh[0])
 
         let linesInMesh = new Set();
         i = 0;
-        for (let u = this.uStart; u < this.uEnd; u += this.uDelta){
+        for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
             let j = 0;
-            for(let v = this.uEnd; v < this.vEnd; v += this.vDelta){
-                for (const neighbor of this.findNeighbors(pointsInMesh, i, j)){
-                    if (!(linesInMesh.has(neighbor) && linesInMesh.has([neighbor[1], neighbor[0]]))){
-                        linesInMesh.add(neighbor);
+            for(let v = object.vStart; v < object.vEnd; v += object.vDelta){
+                //console.log(v)
+                //console.log(u, v)
+                for (const neighbor of object.findNeighbors(pointsInMesh, i, j)){
+                    //console.log(object.findNeighbors(pointsInMesh, i, j))
+                    if (!(linesInMesh.has([pointsInMesh[i][j], neighbor]) && linesInMesh.has(neighbor, pointsInMesh[i][j]))){
+                        linesInMesh.add([pointsInMesh[i][j], neighbor]);
                     }
                 }
                 
@@ -64,17 +69,35 @@ export default class ParametricSurface{
             }
             i += 1;
         }
-    }
 
-    /* //TODO
+
+        let vertices = [];
+        for (let points of linesInMesh){
+            vertices = vertices.concat(points)
+        }
+        console.log(vertices)
+        return vertices
+        //return flatten(vertices)
+    }
+  
     findNeighbors(pointsInMesh, i, j){
+        //console.log(pointsInMesh[0].length)
         let iRange = pointsInMesh.length;
         let jRange = pointsInMesh[0].length;
 
         let neighbors = [];
-        for ()
+        for (let k = i-1; k < i + 1; k++){
+            for (let v = j-1; v < j+1; v++){
+                if (!(k==i && v ==j)){//neighbors set does not include the point itself
+                    let current = this.normalize(iRange, jRange, k, v);
+                    neighbors.push(pointsInMesh[current[0]][current[1]])
+                }
+            }
+        }
+
+        return neighbors
     }
-    */
+
     normalize(iRange, jRange, i, j){
         let res = [i, j];
         if (i == -1){
