@@ -37,17 +37,22 @@ void main(){
     V delta<input id="v delta" type="range" min="0.01" max="1" step="0.01" value="0.01"><br>
     
     U range<input id="u range" type="range" min="0" max="30" step="1" value="0"><br>
-    V range<input id="v range" type="range" min="0" max="30" step="1" value="0"><br>
+    V range<input id="v range" type="range" min="0" max="30" step="1" value="0"><br><br>
 
-  </div>
-
-  <div class="footer">
     <div id="camera">Camera<br>
       <!--X<input id="rotation1" type="range" min="0" max="360" step="-10" value="360">-->
       X<input id="x" type="range" min="0" max="360" step="5" value="0">
       Y<input id="y" type="range" min="0" max="360" step="5" value="0">
       <!--Z<input id="rotation1" type="range" min="0" max="360" step="-10" value="360">-->
     </div>
+  </div>
+
+  <div class="footer">
+
+    <div id="renderOptions">Render Options</div><br>
+    <button id="mesh">Mesh</button>
+    <button id="solid">Solid</button>
+    <button id="points">Points</button>
   </div>
 
 </body>

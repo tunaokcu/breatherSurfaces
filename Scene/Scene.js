@@ -45,67 +45,69 @@ export default class Scene{
         this.objects = []; 
         //this.camera = new Camera(this.gl, this.program); 
         this.camera = new Camera(this.gl, this.program, -10, 10, 6, 0, 0.0,  -30.0, 30.0, 30.0, -30.0, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0))
-        
+        this.camera.setShaderMatrices(this.gl);
+
         this.renderState = "solid";
         this.renderStateChanged = true;
     }
 
 
+
+    redrawModelAndRender(){
+        //Recalculate vertices and send
+        this.vertices = [];
+        for (let object of this.objects){
+            this.vertices = this.vertices.concat(object.sample());
+        }
+
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW);
+
+        this.render();
+    }
+    
+
+
     render(){
-        //Draw if vertices are changed
-        if (this.renderStateChanged){
-            this.renderStateChanged = false;
-
-            this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-            
-            console.log("rendering")
-            this.camera.setShaderMatrices(this.gl);
-
-            this.vertices = [];
-            for (let object of this.objects){
-                this.vertices = this.vertices.concat(object.sample());
-            }
-
-            //console.log(vertices);
-            this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW);
-            this.draw();
-        }          
-    }    
-
-    draw(){
-        //Then render
+        this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);            
         switch(this.renderState){
             case "mesh": this.gl.drawArrays(this.gl.LINES, 0, this.vertices.length); break;
             case "points": this.gl.drawArrays(this.gl.POINTS,0, this.vertices.length); break;
-            case "solid": console.log("solid"); this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, this.vertices.length); break;
+            case "solid": this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, this.vertices.length); break;
         }
     }
+
     //No need to buffer vertex data, just render
     //TODO maybe there should be a renderState variable that determines the type of object to draw(mesh, points, surface, etc)
-    renderAfterCameraAdjustment(){
+    adjustCameraAndRender(){
         //? Is there even any advantage in updating matrices without setting them? If not why seperate these functions
         this.camera.updateMatrices();
         this.camera.setShaderMatrices(this.gl);
 
-        this.draw();
+        this.render();
     }
 
     zoomIn(){
         this.camera.zoomIn();
-        this.renderAfterCameraAdjustment();
+        this.adjustCameraAndRender();
     }
     zoomOut(){
         this.camera.zoomOut();
-        this.renderAfterCameraAdjustment();
+        this.adjustCameraAndRender();
     }
 
     updateTheta(newAngle){
         this.camera.theta = newAngle;
-        this.renderAfterCameraAdjustment();
+        this.adjustCameraAndRender();
     }
     updatePhi(newAngle){
         this.camera.phi = newAngle;
-        this.renderAfterCameraAdjustment();
+        this.adjustCameraAndRender();
     }
     
+    updateRenderState(renderState){
+        if (this.renderState != renderState){
+            this.renderState = renderState;
+            this.render();
+        }
+    }
 }

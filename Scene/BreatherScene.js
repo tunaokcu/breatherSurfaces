@@ -5,35 +5,42 @@ export default class BreatherScene extends Scene{
     constructor(backgroundColor=[1.0, 1.0, 1.0, 1.0]){
         super(backgroundColor);
         this.objects.push(new Breather());
+
+        this.setTestParams();
     }
 
     updateaa(aa){
-        console.log("updating")
         this.objects[0].aa = aa;
-        console.log("current aa is", this.objects[0].aa)
-        this.render();
+        this.redrawModelAndRender();
     }
 
     updateuRange(range){
         this.objects[0].uStart = -range;
         this.objects[0].uEnd = range;
-        this.render();
+        this.redrawModelAndRender();
     }
 
     updatevRange(range){
         this.objects[0].vStart = -range;
         this.objects[0].vEnd = range;
-        this.render();
+        this.redrawModelAndRender();
     }
 
     updateuDelta(delta){
         this.objects[0].uDelta = delta;
-        this.render();
+        this.redrawModelAndRender();
     }
 
     updatevDelta(delta){
         this.objects[0].vDelta = delta;
-        this.render();    
+        this.redrawModelAndRender();    
     }
 
+    setTestParams(){
+        this.objects[0].aa = 0.4;
+        this.objects[0].uStart = -14;
+        this.objects[0].uEnd = 14;
+        this.objects[0].vStart = -37.4;
+        this.objects[0].vEnd = 37.4;
+    }
 }

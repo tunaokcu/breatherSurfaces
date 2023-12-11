@@ -9,8 +9,9 @@ function main(){
     instantiateCameraSliders(scene);
     instantiateZoomHandler(scene);
     instantiateSidebar(scene);
+    instantiateRenderButtons(scene);
 
-    scene.render();
+    scene.redrawModelAndRender();
 }
 
 window.onload = main;
@@ -32,6 +33,11 @@ function instantiateCameraSliders(scene){
     document.getElementById("y").addEventListener("input", (event) => yAxisSliderHandler(scene, parseInt(event.target.value)))    
 }
 
+function instantiateRenderButtons(scene){
+    document.getElementById("mesh").addEventListener("click", () => scene.updateRenderState("mesh"));
+    document.getElementById("solid").addEventListener("click", () => scene.updateRenderState("solid"));
+    document.getElementById("points").addEventListener("click", () => scene.updateRenderState("points"));
+}
 
 //!This is a helper function
 function degreesToRadians(degrees){

@@ -47,12 +47,10 @@ export default class Camera{
 
     #ZOOM_FACTOR = 2;
     zoomIn(){
-        console.log("left before is", this.left)
         this.left /= this.#ZOOM_FACTOR;
         this.right /= this.#ZOOM_FACTOR;
         this.ytop /= this.#ZOOM_FACTOR;
         this.bottom /= this.#ZOOM_FACTOR;
-        console.log("left now is", this.left)
     }
     zoomOut(){
         this.left *= this.#ZOOM_FACTOR;
