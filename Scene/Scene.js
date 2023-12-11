@@ -57,7 +57,7 @@ export default class Scene{
         //Recalculate vertices and send
         this.vertices = [];
         for (let object of this.objects){
-            this.vertices = this.vertices.concat(object.sample());
+            this.vertices = this.vertices.concat(object.getVertices());
         }
 
         this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW);

@@ -1,12 +1,15 @@
 import Scene from "./Scene.js";
 import Breather from "../Objects/Breather.js";
+import Cube from "../Objects/Cube.js";
 
 export default class BreatherScene extends Scene{
     constructor(backgroundColor=[1.0, 1.0, 1.0, 1.0]){
         super(backgroundColor);
+        
         this.objects.push(new Breather());
-
-        this.setTestParams();
+        
+        //this.test1();
+        //this.setTestParams();
     }
 
     updateaa(aa){
@@ -42,5 +45,10 @@ export default class BreatherScene extends Scene{
         this.objects[0].uEnd = 14;
         this.objects[0].vStart = -37.4;
         this.objects[0].vEnd = 37.4;
+    }
+
+    test1(){
+        this.objects.pop();
+        this.objects.push(new Cube());
     }
 }

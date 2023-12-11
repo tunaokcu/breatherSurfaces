@@ -1,8 +1,9 @@
 
-import ParametricSurface from "./ParametricSurface";
+import GeometricObject from "./GeometricObject.js";
+import {flatten, vec4} from "../Common/MV.js";
 
 //Should extend GeometricObject or something of the sort(not high priority, not even relevant to the assignment)
-export default class Cube extends ParametricSurface{
+export default class Cube extends GeometricObject{
     points;
     constructor(){
         super();
@@ -61,7 +62,7 @@ export default class Cube extends ParametricSurface{
     }
 
     //TODO should be lines not points
-    sample(){
+    getVertices(){
         return this.points;
     }
 }

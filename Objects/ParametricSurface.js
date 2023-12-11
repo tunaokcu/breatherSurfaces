@@ -1,6 +1,9 @@
-export default class ParametricSurface{
+import GeometricObject from "./GeometricObject.js";
+
+export default class ParametricSurface extends GeometricObject{
     //should these be outside this class?
     constructor(uStart=0, uEnd=2*Math.PI, uDelta=2*Math.PI/360, vStart=0, vEnd=2*Math.PI, vDelta=2*Math.PI/360){
+        super();
         this.uStart = uStart;
         this.uEnd = uEnd;
         this.uDelta = uDelta;
@@ -8,16 +11,18 @@ export default class ParametricSurface{
         this.vStart = vStart;
         this.vEnd = vEnd;
         this.vDelta = vDelta;
-
+    
+        if(this.constructor == this.parametricFunction) {
+            throw new Error("Class is of abstract type and can't be instantiated");
+         };
+   
+         if(this.parametricFunction == undefined) {
+             throw new Error("parametricFunction method must be implemented");
+         };
     }
 
 
-    //just a blueprint
-    //should return a vec4
-    parametricFunction(u, v){
-        console.log("super called");
-        return vec4(1, 1, 1, 1);
-    }
+
 
     samplePoints(object=this){
         let pointsInMesh = [];
@@ -34,6 +39,9 @@ export default class ParametricSurface{
         return pointsInMesh;
     }
 
+    getVertices(){
+        return this.sample();
+    }
     //should return an array
     sample(object=this){
         //let pointsInMesh = this.samplePoints(object); //to test
@@ -79,7 +87,8 @@ export default class ParametricSurface{
         return vertices
         //return flatten(vertices)
     }
-  
+    
+    //These are HELPER functions 
     findNeighbors(pointsInMesh, i, j){
         //console.log(pointsInMesh[0].length)
         let iRange = pointsInMesh.length;
@@ -97,7 +106,6 @@ export default class ParametricSurface{
 
         return neighbors
     }
-
     normalize(iRange, jRange, i, j){
         let res = [i, j];
         if (i == -1){
@@ -116,6 +124,7 @@ export default class ParametricSurface{
         return res;
     }
 
+    //Naming is odd, even then, should be left up to Geometric Object
     drawAndRender(gl){
         const vertices = sample();
 
