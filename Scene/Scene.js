@@ -71,7 +71,7 @@ export default class Scene{
         switch(this.renderState){
             case "mesh": this.gl.drawArrays(this.gl.LINES, 0, this.vertices.length); break;
             case "points": this.gl.drawArrays(this.gl.POINTS,0, this.vertices.length); break;
-            case "solid": this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, this.vertices.length); break;
+            case "solid": this.renderSolid(); break; //this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, this.vertices.length); break;
         }
     }
 
@@ -83,15 +83,21 @@ export default class Scene{
         }
 
         this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW);
-
+        console.log("TEST")
+        this.renderState = "solid"
         this.render();
     }
     
+    
     renderSolid(){
+        console.log("here");
+        //this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.vertices.length);
+        
         for (let i = 0; i < this.vertices.length; i+= 10){
             this.gl.drawArrays(this.gl.TRIANGLE_FAN, i, 10);
         }
     }
+    
 
     //No need to buffer vertex data, just render
     //TODO maybe there should be a renderState variable that determines the type of object to draw(mesh, points, surface, etc)

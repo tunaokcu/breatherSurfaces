@@ -11,7 +11,7 @@ function main(){
     instantiateSidebar(scene);
     instantiateRenderButtons(scene);
 
-    scene.redrawMeshModelAndRender();
+    scene.redrawSolidModelAndRender();
 }
 
 window.onload = main;
