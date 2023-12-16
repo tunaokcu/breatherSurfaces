@@ -69,7 +69,7 @@ export default class ParametricSurface extends GeometricObject{
                 pointsInMeshStrip[i].push(pointsInMesh[i+1][j]);
             }
         }
-        
+        this.pointsInMeshStrip = pointsInMeshStrip;
         return pointsInMeshStrip;
     }
 
@@ -78,14 +78,38 @@ export default class ParametricSurface extends GeometricObject{
     }
 
     getVertexNormals(){
-        let neighbors = this.getSolidVertices();
-        let normals = []
+        let points = this.pointsInMeshStrip;
+        let allNormals = [];
         
-        for (let i = 0; i < neighbors.length; i += 10){
-            for (let j = i + 1; j < i + 10; j++){//do this for the 9 neighbors
-                
+        for (let i = 0; i < this.pointsInMeshStrip.length; i++){
+            for (let j = 0; j < this.pointsInMeshStrip[i].length; j++){
+                // calculate the edges (vectors) of the current fragment
+                let oneTotwo = subtract(points[i+1],points[i]);
+                let oneTothree = subtract(points[i+2],points[i]);
+                let twoTothree = subtract(points[i+2],points[i+1]);
+                // calculate normals from the edge vectors
+                let normal1 = normalize( cross(oneTotwo, oneTothree) );
+                normal1 = vec4(normal1);
+                normal1[3] = 0;
+
+                // ************************************************************
+                // MINUS SIGN MIGHT NOT CHANGE DIRECTION HERE, HAVE TO MAKE SURE IT DOES
+                // ************************************************************
+                let normal2 = normalize( cross(-oneTotwo, twoTothree) );
+                normal2 = vec4(normal2);
+                normal2[3] = 0;
+
+                let normal3 = normalize( cross(-oneTothree, -twoTothree) );
+                normal3 = vec4(normal3);
+                normal3[3] = 0;
+                // add all vertex normals for the current fragment
+                allNormals.push(normal1);
+                allNormals.push(normal2);
+                allNormals.push(normal3);
             }
         }
+        this.allNormals = allNormals;
+        return allNormals;
     }
 
     sampleSolid(){
