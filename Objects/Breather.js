@@ -9,14 +9,11 @@ export default class Breather extends ParametricSurface{
         super(uStart, uEnd, uDelta, vStart, vEnd, vDelta);
         this.aa = aa;
     }
-
+    
     parametricFunction(u, v){
         return breather(this.aa, u, v);
     }
-
-    sample(){
-        return super.sample(this);
-    }
+    
 }
 
 //aa must range (0, 1)

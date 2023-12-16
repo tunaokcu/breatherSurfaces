@@ -1,4 +1,5 @@
 import GeometricObject from "./GeometricObject.js";
+import {flatten, vec4, vec3, subtract} from "../Common/MV.js";
 
 export default class ParametricSurface extends GeometricObject{
     //should these be outside this class?
@@ -23,7 +24,7 @@ export default class ParametricSurface extends GeometricObject{
 
 
 
-
+    //TODO we can probably delete this
     samplePoints(object=this){
         let pointsInMesh = [];
 
@@ -39,12 +40,23 @@ export default class ParametricSurface extends GeometricObject{
         return pointsInMesh;
     }
 
-    getVertices(){
-        return this.sample();
+    getSolidVertices(){
+        return this.sampleSolid();
     }
-    //should return an array
-    sample(object=this){
-        //let pointsInMesh = this.samplePoints(object); //to test
+
+    getVertexNormals(){
+        let neighbors = this.getSolidVertices();
+        let normals = []
+        
+        for (let i = 0; i < neighbors.length; i += 10){
+            for (let j = i; j < i + 9; j++){//do this for the 9 neighbors
+                
+            }
+        }
+    }
+
+    sampleSolid(){
+        let object = this;
         let pointsInMesh = [];
 
         let i = 0;
@@ -56,18 +68,57 @@ export default class ParametricSurface extends GeometricObject{
             }
             i += 1;
         }
-        
-        console.log(pointsInMesh[0])
+
+    
+        console.log(pointsInMesh)
+        let neighborsInMesh = []
+        i = 0;
+        for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
+            let j = 0;
+            for(let v = object.vStart; v < object.vEnd; v += object.vDelta){
+                let curNeighbors = [pointsInMesh[i][j]];
+                curNeighbors = curNeighbors.concat(this.findNeighbors(pointsInMesh, i, j));
+
+                let upperLeft = this.normalize(pointsInMesh.length, pointsInMesh[0].length, i-1, j-1);
+                curNeighbors.push(pointsInMesh[upperLeft[0]][upperLeft[1]]);//We need to close off the loop
+                
+                neighborsInMesh = neighborsInMesh.concat(curNeighbors)
+                j += 1;
+            }
+            i += 1;
+        }
+
+        console.log(neighborsInMesh)
+        return neighborsInMesh
+    }
+
+    getMeshVertices(){
+        return this.sampleMesh();
+    }
+
+    //should return an array
+    sampleMesh(){
+        let object = this;
+        let pointsInMesh = [];
+
+        let i = 0;
+        for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
+            pointsInMesh.push([]);
+            
+            for(let v = object.vStart; v < object.vEnd; v += object.vDelta){
+                pointsInMesh[i].push(object.parametricFunction(u, v));
+            }
+            i += 1;
+        }
+
+    
 
         let linesInMesh = new Set();
         i = 0;
         for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
             let j = 0;
             for(let v = object.vStart; v < object.vEnd; v += object.vDelta){
-                //console.log(v)
-                //console.log(u, v)
                 for (const neighbor of object.findNeighbors(pointsInMesh, i, j)){
-                    //console.log(object.findNeighbors(pointsInMesh, i, j))
                     if (!(linesInMesh.has([pointsInMesh[i][j], neighbor]) && linesInMesh.has(neighbor, pointsInMesh[i][j]))){
                         linesInMesh.add([pointsInMesh[i][j], neighbor]);
                     }
@@ -83,26 +134,34 @@ export default class ParametricSurface extends GeometricObject{
         for (let points of linesInMesh){
             vertices = vertices.concat(points)
         }
-        console.log(vertices)
-        return vertices
-        //return flatten(vertices)
+        return vertices;
     }
     
-    //These are HELPER functions 
+    //TODO MAKE THIS CLOCKWISE
+    //TODO make sure we start at sol üst
+    //!These are HELPER functions 
     findNeighbors(pointsInMesh, i, j){
-        //console.log(pointsInMesh[0].length)
         let iRange = pointsInMesh.length;
         let jRange = pointsInMesh[0].length;
 
         let neighbors = [];
-        for (let k = i-1; k < i + 1; k++){
-            for (let v = j-1; v < j+1; v++){
-                if (!(k==i && v ==j)){//neighbors set does not include the point itself
-                    let current = this.normalize(iRange, jRange, k, v);
-                    neighbors.push(pointsInMesh[current[0]][current[1]])
-                }
-            }
-        }
+        
+        let current = this.normalize(iRange, jRange, i-1, j-1);
+        neighbors.push(pointsInMesh[current[0]][current[1]]);
+        current = this.normalize(iRange, jRange, i-1, j);
+        neighbors.push(pointsInMesh[current[0]][current[1]]);
+        current = this.normalize(iRange, jRange, i-1, j+1);
+        neighbors.push(pointsInMesh[current[0]][current[1]]);
+        current = this.normalize(iRange, jRange, i, j+1);
+        neighbors.push(pointsInMesh[current[0]][current[1]]);
+        current = this.normalize(iRange, jRange, i+1, j+1);
+        neighbors.push(pointsInMesh[current[0]][current[1]]);
+        current = this.normalize(iRange, jRange, i+1, j);
+        neighbors.push(pointsInMesh[current[0]][current[1]]);
+        current = this.normalize(iRange, jRange, i+1, j-1);
+        neighbors.push(pointsInMesh[current[0]][current[1]]);
+        current = this.normalize(iRange, jRange, i, j-1);
+        neighbors.push(pointsInMesh[current[0]][current[1]]);
 
         return neighbors
     }
@@ -124,23 +183,5 @@ export default class ParametricSurface extends GeometricObject{
         return res;
     }
 
-    //Naming is odd, even then, should be left up to Geometric Object
-    drawAndRender(gl){
-        const vertices = sample();
 
-        var bufferId = gl.createBuffer();
-        gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
-        gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW ); 
-        
-    
-        var vPosition = gl.getAttribLocation( program, "vPosition" );
-        gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
-        gl.enableVertexAttribArray( vPosition );   
-
-        this.render(gl, vertices);   
-    }
-    render(gl, vertices){
-        gl.clear( gl.COLOR_BUFFER_BIT ); 
-        gl.drawArrays( gl.LINES, 0, vertices.length / 4);// divide by 4 since we have 4 dimensions for each vertex
-    }
 }

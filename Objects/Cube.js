@@ -9,7 +9,6 @@ export default class Cube extends GeometricObject{
         super();
 
         this.initCube();
-        //console.log(this.points)
     }
 
     initCube()
@@ -61,8 +60,13 @@ export default class Cube extends GeometricObject{
 
     }
 
+
     //TODO should be lines not points
     getVertices(){
         return this.points;
+    }
+
+    getNormals(){
+        
     }
 }

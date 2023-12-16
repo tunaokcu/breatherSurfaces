@@ -9,8 +9,4 @@ export default class Sphere extends ParametricSurface{
     parametricFunction(u, v){
         return vec4(this.r*Math.cos(u)*Math.cos(v), this.r*Math.sin(u)*Math.cos(v), this.r*Math.sin(v), 1);
     }
-
-    sample(){
-        return super.sample(this);
-    }
 }

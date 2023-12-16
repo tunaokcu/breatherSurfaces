@@ -3,7 +3,6 @@ import {WebGLUtils} from "../Common/myWebGLUtils.js";
 import {initShaders} from "../Common/initShaders.js";
 import Camera from "./Camera.js";
 
-
 export default class Scene{
     canvas;
     gl;
@@ -53,11 +52,11 @@ export default class Scene{
 
 
 
-    redrawModelAndRender(){
+    redrawMeshModelAndRender(){
         //Recalculate vertices and send
         this.vertices = [];
         for (let object of this.objects){
-            this.vertices = this.vertices.concat(object.getVertices());
+            this.vertices = this.vertices.concat(object.getMeshVertices());
         }
 
         this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW);
@@ -73,6 +72,24 @@ export default class Scene{
             case "mesh": this.gl.drawArrays(this.gl.LINES, 0, this.vertices.length); break;
             case "points": this.gl.drawArrays(this.gl.POINTS,0, this.vertices.length); break;
             case "solid": this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, this.vertices.length); break;
+        }
+    }
+
+    redrawSolidModelAndRender(){
+        //Recalculate vertices and send
+        this.vertices = [];
+        for (let object of this.objects){
+            this.vertices = this.vertices.concat(object.getSolidVertices());
+        }
+
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW);
+
+        this.render();
+    }
+    
+    renderSolid(){
+        for (let i = 0; i < this.vertices.length; i+= 10){
+            this.gl.drawArrays(this.gl.TRIANGLE_FAN, i, 10);
         }
     }
 

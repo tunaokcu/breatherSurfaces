@@ -9,7 +9,7 @@ export default class BreatherScene extends Scene{
         this.objects.push(new Breather());
         
         //this.test1();
-        //this.setTestParams();
+        this.setTestParams();
     }
 
     updateaa(aa){
