@@ -54,37 +54,27 @@ export default class ParametricSurface extends GeometricObject{
             pointsInMesh[i].push(pointsInMesh[i][0])
             i += 1;
         }
-        pointsInMesh = pointsInMesh.concat(pointsInMesh[0])
+        //console.log(pointsInMesh[0])
+        pointsInMesh.push(pointsInMesh[0])
 
+        console.log(pointsInMesh);
+        
         let pointsInMeshStrip = [];
 
-        for (let i = 0; i < pointsInMesh.length; i++) {
+        for (let i = 0; i < pointsInMesh.length-1; i++) {
             pointsInMeshStrip.push([]);
 
-            for(let j = 0; j < pointsInMesh[i].length; j++){
-                pointsInMeshStrip.push(pointsInMesh[i][j]);
-                pointsInMeshStrip.push(pointsInMesh[i+1][j]);
+            for(let j = 0; j < pointsInMesh[i].length-1; j++){
+                pointsInMeshStrip[i].push(pointsInMesh[i][j]);
+                pointsInMeshStrip[i].push(pointsInMesh[i+1][j]);
             }
-            /*
-            // add extra column to end
-            pointsInMeshStrip.push(pointsInMesh[i][0])
-            pointsInMeshStrip.push(pointsInMesh[i+1][0])
-            */
         }
-        /*
-        // add extra row to end
-        pointsInMeshStrip.push([]);
-        for (let k = 0; k < pointsInMesh[0].length; k++) {
-            pointsInMeshStrip[pointsInMeshStrip.length-1].push(pointsInMesh[0][k]);
-            
-        }
-        console.log(pointsInMeshStrip)
-        */
+        
         return pointsInMeshStrip;
     }
 
     getSolidVertices(){
-        return this.sampleSolid();
+        return this.sampleSolidStrip();//this.sampleSolid();
     }
 
     getVertexNormals(){

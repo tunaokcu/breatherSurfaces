@@ -1,7 +1,6 @@
 //import Math
 
 import BreatherScene from "./Scene/BreatherScene.js";
-import Scene from "./Scene/Scene.js";
 
 function main(){
     let scene = new BreatherScene();
@@ -11,7 +10,8 @@ function main(){
     instantiateSidebar(scene);
     instantiateRenderButtons(scene);
 
-    scene.redrawSolidModelAndRender();
+    scene.renderState = "points"
+    scene.renderUnconditional();
 }
 
 window.onload = main;

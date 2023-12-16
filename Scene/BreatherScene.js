@@ -8,35 +8,35 @@ export default class BreatherScene extends Scene{
         
         this.objects.push(new Breather());
         
-        //this.test1();
+        //this.test1()
         this.setTestParams();
     }
 
     updateaa(aa){
         this.objects[0].aa = aa;
-        this.redrawModelAndRender();
+        this.renderUnconditional();
     }
 
     updateuRange(range){
         this.objects[0].uStart = -range;
         this.objects[0].uEnd = range;
-        this.redrawModelAndRender();
+        this.renderUnconditional();
     }
 
     updatevRange(range){
         this.objects[0].vStart = -range;
         this.objects[0].vEnd = range;
-        this.redrawModelAndRender();
+        this.renderUnconditional();
     }
 
     updateuDelta(delta){
         this.objects[0].uDelta = delta;
-        this.redrawModelAndRender();
+        this.renderUnconditional();
     }
 
     updatevDelta(delta){
         this.objects[0].vDelta = delta;
-        this.redrawModelAndRender();    
+        this.renderUnconditional();    
     }
 
     setTestParams(){
