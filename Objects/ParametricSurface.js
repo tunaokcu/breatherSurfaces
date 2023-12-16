@@ -40,6 +40,49 @@ export default class ParametricSurface extends GeometricObject{
         return pointsInMesh;
     }
 
+    sampleSolidStrip(object=this){
+        
+        let pointsInMesh = [];
+
+        let i = 0;
+        for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
+            pointsInMesh.push([]);
+            
+            for(let v = object.vStart; v < object.vEnd; v += object.vDelta){
+                pointsInMesh[i].push(object.parametricFunction(u, v));
+            }
+            pointsInMesh[i].push(pointsInMesh[i][0])
+            i += 1;
+        }
+        pointsInMesh = pointsInMesh.concat(pointsInMesh[0])
+
+        let pointsInMeshStrip = [];
+
+        for (let i = 0; i < pointsInMesh.length; i++) {
+            pointsInMeshStrip.push([]);
+
+            for(let j = 0; j < pointsInMesh[i].length; j++){
+                pointsInMeshStrip.push(pointsInMesh[i][j]);
+                pointsInMeshStrip.push(pointsInMesh[i+1][j]);
+            }
+            /*
+            // add extra column to end
+            pointsInMeshStrip.push(pointsInMesh[i][0])
+            pointsInMeshStrip.push(pointsInMesh[i+1][0])
+            */
+        }
+        /*
+        // add extra row to end
+        pointsInMeshStrip.push([]);
+        for (let k = 0; k < pointsInMesh[0].length; k++) {
+            pointsInMeshStrip[pointsInMeshStrip.length-1].push(pointsInMesh[0][k]);
+            
+        }
+        console.log(pointsInMeshStrip)
+        */
+        return pointsInMeshStrip;
+    }
+
     getSolidVertices(){
         return this.sampleSolid();
     }
@@ -49,7 +92,7 @@ export default class ParametricSurface extends GeometricObject{
         let normals = []
         
         for (let i = 0; i < neighbors.length; i += 10){
-            for (let j = i; j < i + 9; j++){//do this for the 9 neighbors
+            for (let j = i + 1; j < i + 10; j++){//do this for the 9 neighbors
                 
             }
         }
