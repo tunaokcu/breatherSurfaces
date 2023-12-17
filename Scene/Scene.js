@@ -8,12 +8,16 @@ export default class Scene{
     canvas;
     gl;
     program;
-    objects;
 
-    vBufferId;
-    vPosition;
+    vertexBuffer; //pointer to the buffer 
+    vPosition; //name of the variable in glsl
+    normalBuffer; //same thing
+    vNormal;
 
     camera;
+    lighting;
+    objects;
+
 
     constructor(backgroundColor=[1.0, 1.0, 1.0, 1.0]){
         this.init(backgroundColor);
@@ -33,12 +37,13 @@ export default class Scene{
         
         this.gl.enable(this.gl.DEPTH_TEST);
 
-        this.vBufferId = this.gl.createBuffer();
-        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vBufferId );
-        
+        this.vertexBuffer = this.gl.createBuffer();
+        this.normalBuffer = this.gl.createBuffer();
         this.vPosition = this.gl.getAttribLocation( this.program, "vPosition" );
-        this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
-        this.gl.enableVertexAttribArray( this.vPosition );
+        this.vNormal = this.gl.getAttribLocation( this.program, "vNormal" );
+        //this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
+        //this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
+        //this.gl.enableVertexAttribArray( this.vPosition );
 
 
         this.objects = []; 
@@ -57,10 +62,21 @@ export default class Scene{
         switch(this.renderState){
             case "mesh":
             case "points": this.calculateMesh(); break; 
-            case "solid": this.calculateSolid(); console.log(this.normals); this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW); break;
+            case "solid": this.calculateSolid(); break; //console.log(this.normals); this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW); break;
         }
 
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW);
+        //!This is rendering stuff
+        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
+        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW );
+        this.gl.vertexAttribPointer( this.vNormal, 4, this.gl.FLOAT, false, 0, 0 );
+        this.gl.enableVertexAttribArray( this.vNormal );
+
+        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
+        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW );
+        this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
+        this.gl.enableVertexAttribArray( this.vPosition );
+
+
     }
     calculateMesh(){
         //Recalculate vertices 
@@ -94,13 +110,17 @@ export default class Scene{
 
     render(){
         this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);    
-
-        this.gl.drawArrays()
+        
+        //When was this even added?
+        //this.gl.drawArrays()
+        
         switch(this.renderState){
             case "mesh": this.gl.drawArrays(this.gl.LINES, 0, this.vertices.length); break;
             case "points": this.gl.drawArrays(this.gl.POINTS,0, this.vertices.length); break;
             case "solid": this.renderSolid(); break; 
         }
+        
+        //this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, this.vertices.length);
     }
 
     renderSolid(){
