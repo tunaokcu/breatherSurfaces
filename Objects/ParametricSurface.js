@@ -1,5 +1,5 @@
 import GeometricObject from "./GeometricObject.js";
-import {flatten, vec4, vec3, subtract} from "../Common/MV.js";
+import {flatten, vec4, vec3, subtract, normalize, cross} from "../Common/MV.js";
 
 export default class ParametricSurface extends GeometricObject{
     //should these be outside this class?
@@ -81,13 +81,16 @@ export default class ParametricSurface extends GeometricObject{
         let points = this.pointsInMeshStrip;
         let allNormals = [];
         
-        for (let i = 0; i < this.pointsInMeshStrip.length; i++){
-            for (let j = 0; j < this.pointsInMeshStrip[i].length; j++){
+        for (let i = 0; i < this.pointsInMeshStrip.length-2; i++){
+            for (let j = 0; j < this.pointsInMeshStrip[i].length-2; j++){
                 // calculate the edges (vectors) of the current fragment
-                let oneTotwo = subtract(points[i+1],points[i]);
-                let oneTothree = subtract(points[i+2],points[i]);
-                let twoTothree = subtract(points[i+2],points[i+1]);
+                let oneTotwo = subtract(points[i][j+1],points[i][j]);
+                let oneTothree = subtract(points[i][j+2],points[i][j]);
+                let twoTothree = subtract(points[i][j+2],points[i][j+1]);
                 // calculate normals from the edge vectors
+                //console.log(oneTothree);
+                //console.log(oneTotwo);
+                //console.log(twoTothree);
                 let normal1 = normalize( cross(oneTotwo, oneTothree) );
                 normal1 = vec4(normal1);
                 normal1[3] = 0;
@@ -95,6 +98,7 @@ export default class ParametricSurface extends GeometricObject{
                 // ************************************************************
                 // MINUS SIGN MIGHT NOT CHANGE DIRECTION HERE, HAVE TO MAKE SURE IT DOES
                 // ************************************************************
+                /*
                 let normal2 = normalize( cross(-oneTotwo, twoTothree) );
                 normal2 = vec4(normal2);
                 normal2[3] = 0;
@@ -103,9 +107,10 @@ export default class ParametricSurface extends GeometricObject{
                 normal3 = vec4(normal3);
                 normal3[3] = 0;
                 // add all vertex normals for the current fragment
+                */
                 allNormals.push(normal1);
-                allNormals.push(normal2);
-                allNormals.push(normal3);
+                //allNormals.push(normal2); 
+                //allNormals.push(normal3);
             }
         }
         this.allNormals = allNormals;

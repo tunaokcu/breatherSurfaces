@@ -10,7 +10,7 @@ function main(){
     instantiateSidebar(scene);
     instantiateRenderButtons(scene);
 
-    scene.renderState = "points"
+    scene.renderState = "solid"
     scene.renderUnconditional();
 }
 

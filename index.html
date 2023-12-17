@@ -10,14 +10,48 @@ uniform mat4 projectionMatrix;
 
 attribute vec4 vPosition;
 
-//Added
 attribute vec3 vNormal;
-varying vec3 varyingNormal;
+//varying vec3 varyingNormal;
+
+//Added
+uniform vec4 ambientProduct, diffuseProduct, specularProduct;
+uniform vec4 lightPosition;
+uniform float shininess;  
+varying vec4 fColor;
 
 void main(){
   gl_Position = projectionMatrix*modelViewMatrix*vPosition;
   gl_PointSize = 5.0;
-  varyingNormal = vNormal;
+  //varyingNormal = vNormal;
+
+  //ADDED lighting code
+  vec3 pos = -(modelViewMatrix * vPosition).xyz;  
+  vec3 light = lightPosition.xyz;
+  vec3 L = normalize( light - pos );
+  vec3 E = normalize( -pos );
+  vec3 H = normalize( L + E );
+  vec4 NN = vec4(vNormal,0);
+  // Transform vertex normal into eye coordinates
+  vec3 N = normalize( (modelViewMatrix*NN).xyz);
+  // Compute terms in the illumination equation
+  vec4 ambient = ambientProduct;
+
+  float Kd = max( dot(L, N), 0.0 );
+  vec4  diffuse = Kd*diffuseProduct;
+
+  float Ks = pow( max(dot(N, H), 0.0), shininess );
+  vec4  specular = Ks * specularProduct;
+  
+  if( dot(L, N) < 0.0 ) {
+    specular = vec4(0.0, 0.0, 0.0, 1.0);
+  } 
+
+  fColor = ambient + diffuse +specular;
+  fColor.a = 1.0;
+
+  // per vertex texture coordinates are passed to the fragment shader
+  //v_texcoord = a_texcoord;
+  //vHasTexture = aHasTexture;
 
 }
 
@@ -25,10 +59,11 @@ void main(){
 <script id="fragment-shader" type="x-shader/x-fragment">
 precision mediump float;
 
-varying vec3 varyingNormal;
+varying vec4 fColor;
+//varying vec3 varyingNormal;
 
 void main(){
-    gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );
+    gl_FragColor = fColor;
 }
 </script>
 

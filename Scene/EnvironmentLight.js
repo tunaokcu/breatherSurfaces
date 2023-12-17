@@ -6,27 +6,29 @@ export default class EnvironmentLight{
         this.diffuseLight = diffuseLight;
         this.specularLight = specularLight;
         this.#getLocations(gl, program);
-
-        this.calculateProducts();
-        this.sendProducts();
     }
 
     #getLocations(gl, program){
-        //shininessLoc = gl.getUniformLocation(program, "shininess");
+        this.shininessLoc = gl.getUniformLocation(program, "shininess");
         this.specularProductLoc = gl.getUniformLocation(program, "specularProduct"); 
         this.ambientProductLoc = gl.getUniformLocation(program, "ambientProduct");
         this.diffuseProductLoc = gl.getUniformLocation(program, "diffuseProduct")
     }
 
-    calculateAndSendProducts(gl, materialAmbient, materialDiffuse, materialSpecular){
-        var ambientProduct = mult(this.ambientLight, materialAmbient);
-        var diffuseProduct = mult(this.diffuseLight, materialDiffuse);
-        var specularProduct = mult(this.specularLight, materialSpecular);
-    
+
+    calculateAndSendProducts(gl, material){
+        var ambientProduct = mult(this.ambientLight, material.materialAmbient);
+        var diffuseProduct = mult(this.diffuseLight, material.materialDiffuse);
+        var specularProduct = mult(this.specularLight, material.materialSpecular);
+        
+        console.log(ambientProduct);
+        console.log(diffuseProduct);
+        console.log(specularProduct);
+
         gl.uniform4fv(this.ambientProductLoc, flatten(ambientProduct));
         gl.uniform4fv(this.diffuseProductLoc, flatten(diffuseProduct) );
         gl.uniform4fv(this.specularProductLoc,flatten(specularProduct) );	
-        gl.uniform1f(shininessLoc, materialShininess);
+        gl.uniform1f(this.shininessLoc, material.materialShininess);
     }
 }
 

@@ -7,5 +7,14 @@ export default class Material{
         this.materialDiffuse = materialDiffuse;
         this.materialSpecular = materialSpecular;
         this.materialShininess = materialShininess;
+
+        this.setTestValues();
+    }
+    setTestValues(){
+        var octopusColor = vec4(193.0/255, 74.0/255, 65.0/255, 0);
+        this.materialAmbient = octopusColor;
+        this.materialDiffuse = octopusColor;
+        this.materialSpecular = octopusColor;
+        this.materialShininess = 50.0;
     }
 }

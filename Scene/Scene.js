@@ -2,6 +2,7 @@ import {flatten, vec3} from "../Common/MV.js";
 import {WebGLUtils} from "../Common/myWebGLUtils.js";
 import {initShaders} from "../Common/initShaders.js";
 import Camera from "./Camera.js";
+import AggregateLight from "./AggregateLight.js";
 
 export default class Scene{
     canvas;
@@ -43,6 +44,7 @@ export default class Scene{
         this.objects = []; 
         this.camera = new Camera(this.gl, this.program, -10, 10, 6, 0, 0.0,  -30.0, 30.0, 30.0, -30.0, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0))
         this.camera.setShaderMatrices(this.gl);
+        this.lighting = new AggregateLight(this.gl, this.program);
 
         this.renderState = "solid";
         this.renderStateChanged = true;
@@ -50,13 +52,14 @@ export default class Scene{
 
 
     calculateAndBuffer(){
+        this.lighting.sendLightValues(this.gl, this.objects[0]);
+
         switch(this.renderState){
             case "mesh":
             case "points": this.calculateMesh(); break; 
-            case "solid": this.calculateSolid(); break;
+            case "solid": this.calculateSolid(); console.log(this.normals); this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW); break;
         }
-        console.log(this.vertices);
-        console.log(flatten(this.vertices))
+
         this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW);
     }
     calculateMesh(){
@@ -69,8 +72,10 @@ export default class Scene{
     calculateSolid(){
         //Recalculate vertices 
         this.vertices = [];
+        this.normals = [];
         for (let object of this.objects){
             this.vertices = this.vertices.concat(object.getSolidVertices());
+            this.normals = this.normals.concat(object.getVertexNormals());
         }
         
         this.solidColumns = this.vertices[0].length;
@@ -88,8 +93,9 @@ export default class Scene{
 
 
     render(){
-        this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);            
-        console.log(this.vertices)
+        this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);    
+
+        this.gl.drawArrays()
         switch(this.renderState){
             case "mesh": this.gl.drawArrays(this.gl.LINES, 0, this.vertices.length); break;
             case "points": this.gl.drawArrays(this.gl.POINTS,0, this.vertices.length); break;
@@ -109,9 +115,15 @@ export default class Scene{
         }   */
     }
     
+    updatePointLightPosition(newPosition){
+        this.lighting.pointLight.setAndSendLightPosition(newPosition);
+        this.render();
+    }
+
+
+
 
     //No need to buffer vertex data, just render
-    //TODO maybe there should be a renderState variable that determines the type of object to draw(mesh, points, surface, etc)
     adjustCameraAndRender(){
         //? Is there even any advantage in updating matrices without setting them? If not why seperate these functions
         this.camera.updateMatrices();

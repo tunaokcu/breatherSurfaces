@@ -561,7 +561,7 @@ function length( u )
 
 //----------------------------------------------------------------------------
 
-function normalize( u, excludeLastComponent )
+export function normalize( u, excludeLastComponent )
 { 
     if ( excludeLastComponent ) {
         var last = u.pop();
