@@ -2,7 +2,6 @@
 
 1)Better camera rotation(I have no idea what's going on right now, also "x" and "y" are mislabeled) -> 5 points
 2)Possibly better optimization for generating objects
-3)Filled object(only mesh is available right now) -> 40 points
 
 4)Gourard Shading -> 10 points
 5)Phong shading -> 10 points

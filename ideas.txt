@@ -4,9 +4,6 @@ Some ideas for minor improvements:
     We could perhaps start without a canvas and allow the scene class to attach a canvas to the screen(together with the necessary UI?) on initialization and detach on deletion, thus ensuring there exists one canvas corresponding to one scene
     We could perhaps also allow dynamically loading shaders depending on certain conditions?..
 
-Mid-size:
-    Point light source class
-
 Major features:
     A model loader class that can load any arbitrary model  
     Support for scene graphs

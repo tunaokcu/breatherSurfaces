@@ -34,17 +34,13 @@ export default class Scene{
     
         this.program = initShaders( this.gl, "vertex-shader", "fragment-shader" );
         this.gl.useProgram( this.program );   
-        
+    
         this.gl.enable(this.gl.DEPTH_TEST);
 
         this.vertexBuffer = this.gl.createBuffer();
         this.normalBuffer = this.gl.createBuffer();
         this.vPosition = this.gl.getAttribLocation( this.program, "vPosition" );
         this.vNormal = this.gl.getAttribLocation( this.program, "vNormal" );
-        //this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
-        //this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
-        //this.gl.enableVertexAttribArray( this.vPosition );
-
 
         this.objects = []; 
         this.camera = new Camera(this.gl, this.program, -10, 10, 6, 0, 0.0,  -30.0, 30.0, 30.0, -30.0, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0))
@@ -104,35 +100,24 @@ export default class Scene{
                 this.vertices.push(temp[i][j]);
             }
         }
-        console.log(this.vertices)
     }
 
 
     render(){
         this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);    
         
-        //When was this even added?
-        //this.gl.drawArrays()
-        
         switch(this.renderState){
             case "mesh": this.gl.drawArrays(this.gl.LINES, 0, this.vertices.length); break;
             case "points": this.gl.drawArrays(this.gl.POINTS,0, this.vertices.length); break;
             case "solid": this.renderSolid(); break; 
-        }
-        
-        //this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, this.vertices.length);
+        }   
     }
 
     renderSolid(){
-        console.log(this.solidColumns);
-
         for (let i = 0; i < this.vertices.length; i+= this.solidColumns ){
             this.gl.drawArrays(this.gl.TRIANGLE_STRIP, i, this.solidColumns);
         }
-        /*
-        for (let i = 0; i < this.vertices.length; i+= 10){
-            this.gl.drawArrays(this.gl.TRIANGLE_FAN, i, 10);
-        }   */
+
     }
     
     updatePointLightPosition(newPosition){
@@ -140,7 +125,7 @@ export default class Scene{
         this.render();
     }
 
-
+    
 
 
     //No need to buffer vertex data, just render

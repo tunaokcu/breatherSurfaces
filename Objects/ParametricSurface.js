@@ -116,6 +116,12 @@ export default class ParametricSurface extends GeometricObject{
         this.allNormals = allNormals;
         return allNormals;
     }
+    getTangents(){
+        if (this.allNormals == null){
+            this.getVertexNormals()
+        }
+           
+    }
 
     sampleSolid(){
         let object = this;
