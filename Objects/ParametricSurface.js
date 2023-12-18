@@ -1,5 +1,5 @@
 import GeometricObject from "./GeometricObject.js";
-import {flatten, vec4, vec3, subtract, normalize, cross} from "../Common/MV.js";
+import {flatten, vec4, vec3, subtract, normalize, cross, negate} from "../Common/MV.js";
 
 export default class ParametricSurface extends GeometricObject{
     //should these be outside this class?
@@ -98,19 +98,18 @@ export default class ParametricSurface extends GeometricObject{
                 // ************************************************************
                 // MINUS SIGN MIGHT NOT CHANGE DIRECTION HERE, HAVE TO MAKE SURE IT DOES
                 // ************************************************************
-                /*
-                let normal2 = normalize( cross(-oneTotwo, twoTothree) );
+                
+                let normal2 = normalize( cross( negate(oneTotwo), twoTothree) );
                 normal2 = vec4(normal2);
                 normal2[3] = 0;
 
-                let normal3 = normalize( cross(-oneTothree, -twoTothree) );
+                let normal3 = normalize( cross(negate(oneTothree), negate(twoTothree)) );
                 normal3 = vec4(normal3);
                 normal3[3] = 0;
                 // add all vertex normals for the current fragment
-                */
                 allNormals.push(normal1);
-                //allNormals.push(normal2); 
-                //allNormals.push(normal3);
+                allNormals.push(normal2); 
+                allNormals.push(normal3);
             }
         }
         this.allNormals = allNormals;

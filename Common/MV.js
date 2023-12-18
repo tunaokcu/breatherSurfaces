@@ -521,7 +521,7 @@ function dot( u, v )
 
 //----------------------------------------------------------------------------
 
-function negate( u )
+export function negate( u )
 {
     var result = [];
     for ( var i = 0; i < u.length; ++i ) {
