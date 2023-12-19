@@ -125,8 +125,6 @@ export default class Scene{
         this.render();
     }
 
-    
-
 
     //No need to buffer vertex data, just render
     adjustCameraAndRender(){
@@ -166,5 +164,12 @@ export default class Scene{
     renderUnconditional(){
         this.calculateAndBuffer();
         this.render();
+    }
+
+    toggleBumpMapping(){
+        for (let object of this.objects){
+            object.bumpMappingOn = !object.bumpMappingOn;
+        }
+        this.renderUnconditional();
     }
 }

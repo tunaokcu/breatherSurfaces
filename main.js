@@ -5,11 +5,10 @@ import BreatherScene from "./Scene/BreatherScene.js";
 function main(){
     let scene = new BreatherScene();
 
-    instantiateCameraSliders(scene);
-    instantiateZoomHandler(scene);
-    instantiateSidebar(scene);
-    instantiateRenderButtons(scene);
 
+    instantiateUI(scene);
+
+    
     scene.renderState = "solid"
     scene.renderUnconditional();
 }
@@ -56,6 +55,17 @@ function instantiateZoomHandler(scene){
     document.addEventListener("wheel", (event) => zoomHandler(event, scene), {passive: false}); //the {passive: false} part is necessary for the zoomHandler to prevent default action
 }
 
+function instantiateBumpMappingButton(scene){
+    document.getElementById("bumpMapping").addEventListener("click", () => scene.toggleBumpMapping());
+}
+
+function instantiateUI(scene){
+    instantiateCameraSliders(scene);
+    instantiateZoomHandler(scene);
+    instantiateSidebar(scene);
+    instantiateRenderButtons(scene);
+    instantiateBumpMappingButton(scene);
+}
 
 
 //let intialMeasurement = 0;

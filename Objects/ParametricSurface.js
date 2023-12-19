@@ -1,6 +1,14 @@
 import GeometricObject from "./GeometricObject.js";
 import {flatten, vec4, vec3, subtract, normalize, cross, negate} from "../Common/MV.js";
 
+
+    
+
+    
+function getRandomFloat(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
 export default class ParametricSurface extends GeometricObject{
     //should these be outside this class?
     constructor(uStart=0, uEnd=2*Math.PI, uDelta=2*Math.PI/360, vStart=0, vEnd=2*Math.PI, vDelta=2*Math.PI/360){
@@ -77,6 +85,19 @@ export default class ParametricSurface extends GeometricObject{
         return this.sampleSolidStrip();//this.sampleSolid();
     }
 
+    getTangents(){
+        let points = this.pointsInMeshStrip;
+        this.tangents = [];
+
+        for (let i = 0; i < this.pointsInMeshStrip.length-2; i++){
+            for (let j = 0; j < this.pointsInMeshStrip[i].length-2; j++){
+                // calculate the edges (vectors) of the current fragment
+                let oneTotwo = subtract(points[i][j+1],points[i][j]);
+                this.tangents.append(oneTotwo);
+            }
+        }        
+    }
+
     getVertexNormals(){
         let points = this.pointsInMeshStrip;
         let allNormals = [];
@@ -87,6 +108,8 @@ export default class ParametricSurface extends GeometricObject{
                 let oneTotwo = subtract(points[i][j+1],points[i][j]);
                 let oneTothree = subtract(points[i][j+2],points[i][j]);
                 let twoTothree = subtract(points[i][j+2],points[i][j+1]);
+
+
                 // calculate normals from the edge vectors
                 //console.log(oneTothree);
                 //console.log(oneTotwo);
@@ -94,24 +117,34 @@ export default class ParametricSurface extends GeometricObject{
                 let normal1 = normalize( cross(oneTotwo, oneTothree) );
                 normal1 = vec4(normal1);
                 normal1[3] = 0;
-
+                
+                
+                if (self.bumpMappingOn){
+                    let bumpFactor = perlin.get(this.pointsInMeshStrip[i][j][0], this.pointsInMeshStrip[i][j][1]);
+                    perlin.seed()
+                    normal1[0] = bumpFactor;
+                    normal1[1] = bumpFactor;
+                    normal1[2]  = bumpFactor;
+                }
                 // ************************************************************
                 // MINUS SIGN MIGHT NOT CHANGE DIRECTION HERE, HAVE TO MAKE SURE IT DOES
                 // ************************************************************
                 
-                let normal2 = normalize( cross( negate(oneTotwo), twoTothree) );
-                normal2 = vec4(normal2);
-                normal2[3] = 0;
+                //let normal2 = normalize( cross( negate(oneTotwo), twoTothree) );
+                //normal2 = vec4(normal2);
+                //normal2[3] = 0;
 
-                let normal3 = normalize( cross(negate(oneTothree), negate(twoTothree)) );
-                normal3 = vec4(normal3);
-                normal3[3] = 0;
+                //let normal3 = normalize( cross(negate(oneTothree), negate(twoTothree)) );
+                //normal3 = vec4(normal3);
+                //normal3[3] = 0;
                 // add all vertex normals for the current fragment
                 allNormals.push(normal1);
-                allNormals.push(normal2); 
-                allNormals.push(normal3);
+                //allNormals.push(normal2); 
+                //allNormals.push(normal3);
             }
         }
+        console.log(this.pointsInMeshStrip.length*this.pointsInMeshStrip[0].length);
+        console.log(allNormals.length);
         this.allNormals = allNormals;
         return allNormals;
     }
@@ -119,7 +152,7 @@ export default class ParametricSurface extends GeometricObject{
         if (this.allNormals == null){
             this.getVertexNormals()
         }
-           
+
     }
 
     sampleSolid(){

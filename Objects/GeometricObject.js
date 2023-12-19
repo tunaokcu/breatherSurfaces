@@ -33,5 +33,6 @@ export default class GeometricObject{
         this.material = new Material();
         //TODO a potential are of improvement is to also add a Texture object. This is probably pretty much required for our assignment anyways.
         //TODO, setColor, etc
+        self.bumpMappingOn = false;
     }
 }
