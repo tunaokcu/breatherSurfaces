@@ -46,3 +46,43 @@ function breatherY(aa, u, v, w, denom){
 function breatherZ(aa, u, v, w, denom){
     return 2 * w * Math.cosh(aa*u) * (-w * Math.sin(v) * Math.cos(w*v) + Math.cos(v) * Math.sin(w*v)) / denom;
 }
+
+function dxdu(aa, u, v, w){
+    return -1 + 2*(Math.pow(-aa,2)+1)*(Math.pow(w,2)*Math.cos(aa*u)* Math.pow(Math.cosh(aa*u),3) +
+     Math.pow(aa,2) * Math.cos(aa*u) * Math.cosh(aa*u) * Math.sin(w*v) +
+     Math.pow(a,2) * Math.sin(aa*u) * Math.sinh(aa*u) * Math.pow(Math.sin(w*v),2) - 
+     Math.pow(w,2) * Math.sin(aa*u) * Math.pow(Math.cosh(aa*u),2) * Math.sinh(aa*u)) /
+     Math.pow(Math.pow(w,2)*Math.pow(Math.cosh(aa*u),2) + Math.pow(aa,2) * Math.pow(Math.sin(w*v),2),2)
+}
+
+function dxdv(aa, u, v, w){
+    return (2 * aa * (Math.pow(aa,2) - 1) * w * Math.sin(aa*u) * Math.cosh(aa*u) *Math.sinh(2*v*w) )/
+    Math.pow(Math.pow(aa,2) * Math.pow(Math.sin(v*w),2) + Math.pow(w,2) * Math.pow(Math.cosh(aa*u),2),2)
+}
+
+function dydu(aa, u, v, w){
+    return (2*Math.sinh(aa*u)*(Math.sin(v)*Math.sin(w*v) + w*Math.cos(v)*Math.cos(v*w))*
+    (Math.pow(w,3)*Math.pow(Math.cosh(aa*u),2) - Math.pow(aa,2)*w*Math.pow(Math.sin(v*w),2)))/
+    Math.pow(Math.pow(aa,2) * Math.pow(Math.sin(v*w),2) + Math.pow(w,2) * Math.pow(Math.cosh(aa*u),2),2)
+}
+
+function dydv(aa, u, v, w){
+    return (2*w*Math.cosh(aa*u)*(Math.pow(w,2)*Math.sin(w*v)*Math.cos(v)-Math.sin(v*w)*Math.cos(v))*
+    (Math.pow(w,2)*Math.pow(Math.cosh(aa*u),2)+ Math.pow(aa,2)*Math.pow(Math.sin(w*v),2))-
+    Math.pow(aa,2)*w*Math.sin(2*w*v)*(-w*Math.cos(w*v)*Math.cos(v)-Math.sin(w*v)*Math.sin(v)))/
+    (aa*Math.pow(Math.pow(aa,2) * Math.pow(Math.sin(v*w),2) + Math.pow(w,2) * Math.pow(Math.cosh(aa*u),2),2))
+}
+
+function dzdu(aa, u, v, w){
+    return (2*w*Math.sinh(aa*u)*(Math.sin(w*v)*Math.cos(v)-w*Math.cos(w*v)*Math.sin(v))*
+    (Math.pow(aa,2) * Math.pow(Math.sin(w*v),2) - Math.pow(w,2) * Math.pow(Math.cosh(aa*u),2)))/
+    Math.pow(Math.pow(aa,2) * Math.pow(Math.sin(v*w),2) + Math.pow(w,2) * Math.pow(Math.cosh(aa*u),2),2)
+}
+
+function dzdv(aa, u, v, w){
+    return (2*w*Math.cosh(aa*u)*
+    (Math.pow(w,2)*Math.sin(w*v)*Math.sin(v)-Math.sin(w*v)*Math.sin(v))*
+    (Math.pow(w,2)*Math.pow(Math.cosh(aa*u),2)+Math.pow(aa,2)*Math.pow(Math.sin(w*v),2))-
+    Math.pow(aa,2)*w*Math.sin(2*w*v)*(-w*Math.cos(w*v)*Math.sin(v)+Math.sin(w*v)*Math.cos(v)))/
+    (aa*Math.pow(Math.pow(aa,2) * Math.pow(Math.sin(v*w),2) + Math.pow(w,2) * Math.pow(Math.cosh(aa*u),2),2))
+}
