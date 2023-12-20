@@ -1,6 +1,6 @@
 import GeometricObject from "./GeometricObject.js";
 import {flatten, vec4, vec3, subtract, normalize, cross, negate} from "../Common/MV.js";
-import bump from "./BumpMapGenerator.JS" 
+//import bump from "./BumpMapGenerator.JS" 
 
     
 

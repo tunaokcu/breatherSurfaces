@@ -61,7 +61,7 @@ function instantiateUI(scene){
     instantiateZoomHandler(scene);
     instantiateSidebar(scene);
     instantiateRenderButtons(scene);
-    instantiateBumpMappingButton(scene);
+    // instantiateBumpMappingButton(scene);
     instantiateLightUI(scene);
     //instantiateNormalToggle(scene);
 }
