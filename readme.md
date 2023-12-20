@@ -1,5 +1,7 @@
-Run gourard.html
+Parametric surface rendering using pure WebGL. Developed by Ege Çenberci and Tuna Okçu.
 
-In main run "scene.normalType = 'trueNormals' " before "scene.renderUnconditional()" to view our breather surface illuminated based on true normals instead of vertex normals
+Index.html implements gourard shading.
 
-Use ctrl + mouse wheel to zoom in and out
+In main run "scene.normalType = 'trueNormals' " before "scene.renderUnconditional()" to view our breather surface illuminated based on true normals instead of vertex normals.
+
+Use ctrl + mouse wheel to zoom in and out.
