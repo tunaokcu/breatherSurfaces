@@ -1,6 +1,6 @@
 import GeometricObject from "./GeometricObject.js";
 import {flatten, vec4, vec3, subtract, normalize, cross, negate} from "../Common/MV.js";
-
+import bump from "./BumpMapGenerator.JS" 
 
     
 
@@ -65,7 +65,6 @@ export default class ParametricSurface extends GeometricObject{
         //console.log(pointsInMesh[0])
         pointsInMesh.push(pointsInMesh[0])
 
-        console.log(pointsInMesh);
         
         let pointsInMeshStrip = [];
 
@@ -104,10 +103,11 @@ export default class ParametricSurface extends GeometricObject{
         
         for (let i = 0; i < this.pointsInMeshStrip.length-2; i++){
             for (let j = 0; j < this.pointsInMeshStrip[i].length-2; j++){
+                //console.log("calculating normals")
                 // calculate the edges (vectors) of the current fragment
                 let oneTotwo = subtract(points[i][j+1],points[i][j]);
                 let oneTothree = subtract(points[i][j+2],points[i][j]);
-                let twoTothree = subtract(points[i][j+2],points[i][j+1]);
+                //let twoTothree = subtract(points[i][j+2],points[i][j+1]);
 
 
                 // calculate normals from the edge vectors
@@ -119,13 +119,14 @@ export default class ParametricSurface extends GeometricObject{
                 normal1[3] = 0;
                 
                 
-                if (self.bumpMappingOn){
+                if (this.bumpMappingOn){
                     let bumpFactor = perlin.get(this.pointsInMeshStrip[i][j][0], this.pointsInMeshStrip[i][j][1]);
                     perlin.seed()
-                    normal1[0] = bumpFactor;
-                    normal1[1] = bumpFactor;
-                    normal1[2]  = bumpFactor;
+                    normal1[0] *= bumpFactor;
+                    normal1[1] *= bumpFactor;
+                    normal1[2]  *= bumpFactor;
                 }
+                normal1 = normalize(normal1);
                 // ************************************************************
                 // MINUS SIGN MIGHT NOT CHANGE DIRECTION HERE, HAVE TO MAKE SURE IT DOES
                 // ************************************************************
@@ -143,8 +144,7 @@ export default class ParametricSurface extends GeometricObject{
                 //allNormals.push(normal3);
             }
         }
-        console.log(this.pointsInMeshStrip.length*this.pointsInMeshStrip[0].length);
-        console.log(allNormals.length);
+
         this.allNormals = allNormals;
         return allNormals;
     }
@@ -155,6 +155,36 @@ export default class ParametricSurface extends GeometricObject{
 
     }
 
+    bumpMap(normal1, u, v){
+        if (this.bumpMappingOn){
+            let bumpFactor = perlin.get(u, v);//perlin.get(this.pointsInMeshStrip[i][j][0], this.pointsInMeshStrip[i][j][1]);
+            perlin.seed()
+            normal1[0] *= bumpFactor;
+            normal1[1] *= bumpFactor;
+            normal1[2]  *= bumpFactor;
+            normal1 = normalize(normal1);
+        }
+    }
+    getTrueNormals(){
+        let object = this;
+        let pointsInMesh = [];
+
+        let i = 0;
+        for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
+            
+            for(let v = object.vStart; v < object.vEnd; v += object.vDelta){
+                let normal1 = object.trueNormals(u, v);
+                normal1[3] = 0;
+                normal1 = this.bumpMap(normal1, u, v);
+
+                pointsInMesh.push(normal1);
+            }
+            i += 1;
+        }
+        
+        console.log(pointsInMesh)
+        return pointsInMesh;
+    }
     sampleSolid(){
         let object = this;
         let pointsInMesh = [];
@@ -170,7 +200,6 @@ export default class ParametricSurface extends GeometricObject{
         }
 
     
-        console.log(pointsInMesh)
         let neighborsInMesh = []
         i = 0;
         for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
@@ -188,7 +217,6 @@ export default class ParametricSurface extends GeometricObject{
             i += 1;
         }
 
-        console.log(neighborsInMesh)
         return neighborsInMesh
     }
 

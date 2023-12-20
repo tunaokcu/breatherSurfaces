@@ -1,5 +1,5 @@
 import ParametricSurface from "./ParametricSurface.js";
-import {flatten, vec4} from "../Common/MV.js";
+import {flatten, vec4, cross, vec3} from "../Common/MV.js";
 
 export default class Breather extends ParametricSurface{
     constructor(uStart=-4*Math.PI, uEnd=4*Math.PI, uDelta=90*Math.PI/360, vStart=-4*Math.PI, vEnd=4*Math.PI, vDelta=90*Math.PI/360, aa = 0.9){
@@ -13,7 +13,38 @@ export default class Breather extends ParametricSurface{
     parametricFunction(u, v){
         return breather(this.aa, u, v);
     }
-    
+
+    trueNormals(u, v){
+        let res = normals(this.aa, u, v, breatherW(this.aa))
+        
+        /*
+        for (let i = 0; i < 3; i++){
+            if (res[i] <= 0){
+                res[i] = getRandomSmallNumber();
+            }
+        }
+        */
+
+        return res
+    }
+}
+
+function getRandomSmallNumber(){
+    return 0.05;
+}
+
+function normals(aa, u, v, w){
+    return cross(uPartials(aa, u, v, w), vPartials(aa, u, v, w));
+}
+function uPartials(aa, u, v, w){
+    return vec3(dxdu(aa, u, v, w),
+                dydu(aa, u, v, w),
+                dzdu(aa, u, v, w));
+}
+function vPartials(aa, u, v, w){
+    return vec3(dxdv(aa, u, v, w),
+    dydv(aa, u, v, w),
+    dzdv(aa, u, v, w));
 }
 
 //aa must range (0, 1)
@@ -50,7 +81,7 @@ function breatherZ(aa, u, v, w, denom){
 function dxdu(aa, u, v, w){
     return -1 + 2*(Math.pow(-aa,2)+1)*(Math.pow(w,2)*Math.cos(aa*u)* Math.pow(Math.cosh(aa*u),3) +
      Math.pow(aa,2) * Math.cos(aa*u) * Math.cosh(aa*u) * Math.sin(w*v) +
-     Math.pow(a,2) * Math.sin(aa*u) * Math.sinh(aa*u) * Math.pow(Math.sin(w*v),2) - 
+     Math.pow(aa,2) * Math.sin(aa*u) * Math.sinh(aa*u) * Math.pow(Math.sin(w*v),2) - 
      Math.pow(w,2) * Math.sin(aa*u) * Math.pow(Math.cosh(aa*u),2) * Math.sinh(aa*u)) /
      Math.pow(Math.pow(w,2)*Math.pow(Math.cosh(aa*u),2) + Math.pow(aa,2) * Math.pow(Math.sin(w*v),2),2)
 }

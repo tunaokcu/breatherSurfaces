@@ -17,6 +17,8 @@ uniform mat3 vNormals -> vNormal1, vNormal2, vNormal3
 */
 
 //Added
+uniform float isSolid;
+
 uniform vec4 ambientProduct, diffuseProduct, specularProduct;
 uniform vec4 lightPosition;
 uniform float shininess;  
@@ -24,33 +26,36 @@ varying vec4 fColor;
 
 void main(){
   gl_Position = projectionMatrix*modelViewMatrix*vPosition;
-  //gl_PointSize = 5.0;
-  //varyingNormal = vNormal;
 
-  //ADDED lighting code
-  vec3 pos = -(modelViewMatrix * vPosition).xyz;  
-  vec3 light = lightPosition.xyz;
-  vec3 L = normalize( light - pos );  
-  vec3 E = normalize( -pos );
-  vec3 H = normalize( L + E );
-  vec4 NN = vec4(vNormal,0);
-  // Transform vertex normal into eye coordinates
-  vec3 N = normalize( (modelViewMatrix*NN).xyz);
-  // Compute terms in the illumination equation
-  vec4 ambient = ambientProduct;
+  fColor = vec4(0.0, 0.0, 0.0, 0.0);
+    //gl_PointSize = 5.0;
+    //varyingNormal = vNormal;
 
-  float Kd = max( dot(L, N), 0.0 );
-  vec4  diffuse = Kd*diffuseProduct;
+    //ADDED lighting code
+    vec3 pos = -(modelViewMatrix * vPosition).xyz;  
+    vec3 light = lightPosition.xyz;
+    vec3 L = normalize( light - pos );  
+    vec3 E = normalize( -pos );
+    vec3 H = normalize( L + E );
+    vec4 NN = vec4(vNormal,0);
+    // Transform vertex normal into eye coordinates
+    vec3 N = normalize( (modelViewMatrix*NN).xyz);
+    // Compute terms in the illumination equation
+    vec4 ambient = ambientProduct;
 
-  float Ks = pow( max(dot(N, H), 0.0), shininess );
-  vec4  specular = Ks * specularProduct;
+    float Kd = max( dot(L, N), 0.0 );
+    vec4  diffuse = Kd*diffuseProduct;
+
+    float Ks = pow( max(dot(N, H), 0.0), shininess );
+    vec4  specular = Ks * specularProduct;
+    
+    if( dot(L, N) < 0.0 ) {
+      specular = vec4(0.0, 0.0, 0.0, 1.0);
+    } 
+
+    fColor = ambient + diffuse +specular;
+    fColor.a = 1.0;
   
-  if( dot(L, N) < 0.0 ) {
-    specular = vec4(0.0, 0.0, 0.0, 1.0);
-  } 
-
-  fColor = ambient + diffuse +specular;
-  fColor.a = 1.0;
 
   // per vertex texture coordinates are passed to the fragment shader
   //v_texcoord = a_texcoord;
@@ -98,17 +103,30 @@ void main(){
       <!--Z<input id="rotation1" type="range" min="0" max="360" step="-10" value="360">-->
     </div>
 
-    <button id="bumpMapping">Bump Mapping</button>
+
+    Light Position
+    <button id="x+">+X</button>
+    <button id="x-">-X</button>
+    <button id="y+">+Y</button>
+    <button id="y-">-Y</button>
+    <button id="z+">+Z</button>
+    <button id="z-">-Z</button><br>
+
+    <button id="bumpMapping">Bump</button>
+    <!--<button id="toggleNormals">Toggle True vNormals</button>-->
 
   </div>
 
   <div class="footer">
 
     <div id="renderOptions">Render Options</div><br>
-    <button id="mesh">Mesh</button>
-    <button id="solid">Solid</button>
-    <button id="points">Points</button>
-  </div>
+      <button id="mesh">Mesh</button>
+      <button id="solid">Solid</button>
+      <button id="points">Points</button>
+      <a href="/phong.html">
+        <button id="phong">Phong</button>
+      </a>
+    </div>
 
 </body>
 </html>

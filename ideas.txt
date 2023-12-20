@@ -1,9 +1,0 @@
-Some ideas for minor improvements:
-    Sağ, sol alt, alt, sağ alt, sağ
-    Ensure only one scene exists at a time(singleton class) -> unless we have multiple canvases each corresponding to a scene
-    We could perhaps start without a canvas and allow the scene class to attach a canvas to the screen(together with the necessary UI?) on initialization and detach on deletion, thus ensuring there exists one canvas corresponding to one scene
-    We could perhaps also allow dynamically loading shaders depending on certain conditions?..
-
-Major features:
-    A model loader class that can load any arbitrary model  
-    Support for scene graphs

@@ -25,6 +25,8 @@ export default class Scene{
     
     //If for some reason shader and canvas ids must be changed, make sure to update it here as well
     init(backgroundColor){
+        this.normalType = "vertexNormals";
+
         this.canvas = document.getElementById( "gl-canvas" );
         this.gl = WebGLUtils.setupWebGL( this.canvas );    
         if ( !this.gl ) { alert( "WebGL isn't available" ); }           
@@ -42,7 +44,7 @@ export default class Scene{
         this.vPosition = this.gl.getAttribLocation( this.program, "vPosition" );
         this.vNormal = this.gl.getAttribLocation( this.program, "vNormal" );
 
-        this.objects = []; 
+        this.object = null;
         this.camera = new Camera(this.gl, this.program, -10, 10, 6, 0, 0.0,  -30.0, 30.0, 30.0, -30.0, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0))
         this.camera.setShaderMatrices(this.gl);
         this.lighting = new AggregateLight(this.gl, this.program);
@@ -53,19 +55,24 @@ export default class Scene{
 
 
     calculateAndBuffer(){
-        this.lighting.sendLightValues(this.gl, this.objects[0]);
-
         switch(this.renderState){
             case "mesh":
             case "points": this.calculateMesh(); break; 
-            case "solid": this.calculateSolid(); break; //console.log(this.normals); this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW); break;
+            case "solid":   this.lighting.sendLightValues(this.gl, this.object);  this.calculateSolid(); break; //console.log(this.normals); this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW); break;
         }
 
+        let stateFloat =  Number(this.renderState ==="solid");
+        console.log(stateFloat);
+        this.gl.uniform1f( this.gl.getUniformLocation(this.program, "isSolid"), stateFloat);
+
         //!This is rendering stuff
-        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
-        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW );
-        this.gl.vertexAttribPointer( this.vNormal, 4, this.gl.FLOAT, false, 0, 0 );
-        this.gl.enableVertexAttribArray( this.vNormal );
+        if (this.renderState === "solid"){
+            console.log("buffering normals");
+            this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
+            this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW );
+            this.gl.vertexAttribPointer( this.vNormal, 4, this.gl.FLOAT, false, 0, 0 );
+            this.gl.enableVertexAttribArray( this.vNormal );
+        }
 
         this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
         this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW );
@@ -75,21 +82,20 @@ export default class Scene{
 
     }
     calculateMesh(){
-        //Recalculate vertices 
-        this.vertices = [];
-        for (let object of this.objects){
-            this.vertices = this.vertices.concat(object.getMeshVertices());
+        this.vertices =  this.object.getMeshVertices();
+    }
+
+    calculateSolid(){
+        this.calculateSolidVertices();        
+        switch(this.normalType){
+            case "vertexNormals": this.calculateVertexNormals(); break;
+            case "trueNormals": this.calculateTrueNormals(); console.log("calculated true normals"); break;
         }
     }
-    calculateSolid(){
-        //Recalculate vertices 
-        this.vertices = [];
-        this.normals = [];
-        for (let object of this.objects){
-            this.vertices = this.vertices.concat(object.getSolidVertices());
-            this.normals = this.normals.concat(object.getVertexNormals());
-        }
-        
+    calculateSolidVertices(){
+        //? Why
+        this.vertices = this.object.getSolidVertices();
+
         this.solidColumns = this.vertices[0].length;
         
         let temp = this.vertices;
@@ -102,10 +108,31 @@ export default class Scene{
         }
     }
 
+    calculateTrueNormals(){
+        //? Why
+        this.normals = this.object.getTrueNormals();
+        console.log(this.normals[0])
+        return;
+            
+        this.solidColumns = this.normals.length;
+        
+        let temp = this.normals;
+        this.normals = [];
+
+        for (let i = 0; i < temp.length; i++) {
+            for (let j = 0; j < temp[0].length; j++) {
+                this.normals.push(temp[i][j]);
+            }
+        }
+    }
+    calculateVertexNormals(){
+        this.normals =  this.object.getVertexNormals(); 
+    }
 
     render(){
         this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);    
-        
+
+        console.log("rendering");
         switch(this.renderState){
             case "mesh": this.gl.drawArrays(this.gl.LINES, 0, this.vertices.length); break;
             case "points": this.gl.drawArrays(this.gl.POINTS,0, this.vertices.length); break;
@@ -166,10 +193,30 @@ export default class Scene{
         this.render();
     }
 
+    //toggles correctly
     toggleBumpMapping(){
-        for (let object of this.objects){
-            object.bumpMappingOn = !object.bumpMappingOn;
+        this.object.bumpMappingOn = !this.object.bumpMappingOn;
+        if (this.renderState === "solid"){
+            this.renderUnconditional();
+        }   
+     }
+    
+    incrementLightLocation(x, y, z){
+        this.lighting.pointLight.incrementLightLocation(this.gl, x, y, z);
+        if (this.renderState === "solid"){
+            this.render();
         }
-        this.renderUnconditional();
+    }
+
+    toggleTrueNormals(){
+        if(this.normalType = "vertexNormals"){
+            this.normalType = "trueNormals";
+        }else{
+            this.normalType = "vertexNormals";
+        }
+
+        if (this.renderState === "solid"){
+            this.renderUnconditional();
+        }   
     }
 }

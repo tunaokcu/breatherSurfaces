@@ -1,15 +1,8 @@
-//import Math
-
 import BreatherScene from "./Scene/BreatherScene.js";
 
 function main(){
     let scene = new BreatherScene();
-
-
     instantiateUI(scene);
-
-    
-    scene.renderState = "solid"
     scene.renderUnconditional();
 }
 
@@ -59,12 +52,18 @@ function instantiateBumpMappingButton(scene){
     document.getElementById("bumpMapping").addEventListener("click", () => scene.toggleBumpMapping());
 }
 
+function instantiateNormalToggle(scene){
+    document.getElementById("toggleNormals").addEventListener("click", () => scene.toggleTrueNormals());
+}
+
 function instantiateUI(scene){
     instantiateCameraSliders(scene);
     instantiateZoomHandler(scene);
     instantiateSidebar(scene);
     instantiateRenderButtons(scene);
     instantiateBumpMappingButton(scene);
+    instantiateLightUI(scene);
+    //instantiateNormalToggle(scene);
 }
 
 
@@ -82,4 +81,16 @@ function zoomHandler(event, scene){
             scene.zoomOut();
         }
     }
+}
+
+
+function instantiateLightUI(scene){
+    document.getElementById("x+").addEventListener("click", () => (scene.incrementLightLocation(1, 0, 0)));
+    document.getElementById("x-").addEventListener("click", () => (scene.incrementLightLocation(-1, 0, 0)));
+
+    document.getElementById("y+").addEventListener("click", () => (scene.incrementLightLocation(0, 1, 0)));
+    document.getElementById("y-").addEventListener("click", () => (scene.incrementLightLocation(0, -1, 0)));
+
+    document.getElementById("z+").addEventListener("click", () => (scene.incrementLightLocation(0, 0, 1)));
+    document.getElementById("z-").addEventListener("click", () => (scene.incrementLightLocation(0, 0, -1)));
 }
