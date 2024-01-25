@@ -9,6 +9,9 @@ import Sphere from "./Objects/Sphere.js";
 import Plane from "./Objects/Plane.js";
 import SceneNode from "./Objects/SceneNode.js"
 
+import Head from "./Octopus/Head.js";
+import Leg from "./Octopus/Leg.js";
+
 function main(){
     //!Our problem with vertex rendering can be seen clearly here
     /*
@@ -22,6 +25,7 @@ function main(){
 
     let planeNode = new SceneNode(new Plane());
     planeNode.scaleBy = [10, 10, 10];
+    planeNode.translateBy = [0 , 0, 3];
     breatherScene.tree.push(planeNode);
 
     let sphereNode = new SceneNode(new Sphere());
@@ -32,11 +36,11 @@ function main(){
 
     breatherScene.root.nodes.push(planeNode);
     breatherScene.root.nodes.push(sphereNode);
+    breatherScene.root.nodes.push(new Head());
+    breatherScene.root.nodes.push(new Leg());
 
-    
-    breatherScene.treeInit();
-    breatherScene.treeRender();
-    //breatherScene.treeRenderMultiLevel();
+
+    breatherScene.treeRenderMultiLevel();
     //breatherScene.render();
     instantiateUI(breatherScene);
 

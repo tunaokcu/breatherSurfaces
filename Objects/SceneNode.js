@@ -3,7 +3,7 @@ import { scale4, rotate, translate, mat4, mult } from "../Common/MV.js";
 export default class SceneNode{
     nodes = []; //TODO make this object itself iterable
     //In order to be iterable, an object must implement the @@iterator method, meaning that the object (or one of the objects up its prototype chain) must have a property with a @@iterator key which is available via constant Symbol. iterator : [Symbol. iterator]
-    constructor(object, scaleBy=[1,1,1], rotateBy=[0,0,0], translateBy=[0,0,0]){
+    constructor(object=null, scaleBy=[1,1,1], rotateBy=[0,0,0], translateBy=[0,0,0]){
         this.object = object;
         this.scaleBy = scaleBy;
         this.rotateBy = rotateBy;
