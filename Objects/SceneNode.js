@@ -12,6 +12,7 @@ export default class SceneNode{
     }
 
     //Not sure about the order, so figure it out
+    //The order seems fine
     #initMV(scaleBy, rotateBy, translateBy){
         this.mv = mat4();
         //Translate
@@ -28,8 +29,36 @@ export default class SceneNode{
     }
 
     getInstanceMatrix(modelViewMatrix){
-        this.#initMV(this.scaleBy, this.rotateBy, this.translateBy)
-        return mult(modelViewMatrix, this.mv);
+        const [translateBy, scaleBy, rotateBy] = [this.translateBy, this.scaleBy, this.rotateBy]
+        
+        let mv = mat4();
+        //Translate
+        mv = mult(mv, translate(...translateBy));
+
+        //Rotate
+        mv = mult(mv, rotate(rotateBy[0], 1, 0, 0));
+        mv = mult(mv, rotate(rotateBy[1], 0, 1, 0));
+        mv = mult(mv, rotate(rotateBy[2], 0, 0, 1));        
+        
+        //Scale
+        mv = mult(mv, scale4(...scaleBy))
+
+        return mult(modelViewMatrix, mv);
     }
 
+    //Next modelViewMatrix. Desn't scale.
+    getModelViewMatrix(modelViewMatrix){
+        const [translateBy, scaleBy, rotateBy] = [this.translateBy, this.scaleBy, this.rotateBy]
+
+        let mv = mat4();
+        //Translate
+        mv = mult(mv, translate(...translateBy));
+
+        //Rotate
+        mv = mult(mv, rotate(rotateBy[0], 1, 0, 0));
+        mv = mult(mv, rotate(rotateBy[1], 0, 1, 0));
+        mv = mult(mv, rotate(rotateBy[2], 0, 0, 1));        
+        
+        return mult(modelViewMatrix, mv);
+    }
 }

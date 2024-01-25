@@ -12,10 +12,10 @@ export default class Leg extends SceneNode{
         this.nodes[0].translateBy = [0, -4, 0]
 
         this.nodes[0].nodes = [new MiddleLeg()];
-        this.nodes[0].nodes[0].translateBy = [0, -2, 0];
+        this.nodes[0].nodes[0].translateBy = [0, -3, 0];
 
 
         this.nodes[0].nodes[0].nodes = [new LowerLeg()];
-        this.nodes[0].nodes[0].nodes[0].translateBy = [0, -5, 0];
+        this.nodes[0].nodes[0].nodes[0].translateBy = [0, -2, 0];
     }
 }

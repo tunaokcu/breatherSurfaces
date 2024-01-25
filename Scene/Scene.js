@@ -77,15 +77,14 @@ export default class Scene{
 
     treeTraversal(node, MV){
         if (node != null || node != undefined){
-            let instanceMatrix = node.getInstanceMatrix(MV);
 
             //Draw only if the node has an object. Nodes can also just be containers for other nodes.
-            if (node.object != null || node.object != undefined){ this.renderNode(node, instanceMatrix);}
+            if (node.object != null || node.object != undefined){ this.renderNode(node, node.getInstanceMatrix(MV));}
             
             for (const childNode of node.nodes){
                 console.log("here")
                 
-                this.treeTraversal(childNode, instanceMatrix)
+                this.treeTraversal(childNode, node.getModelViewMatrix(MV))
             }
         }
     }

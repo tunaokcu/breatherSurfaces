@@ -37,7 +37,10 @@ function main(){
     breatherScene.root.nodes.push(planeNode);
     breatherScene.root.nodes.push(sphereNode);
     breatherScene.root.nodes.push(new Head());
-    breatherScene.root.nodes.push(new Leg());
+
+    let leg = new Leg();
+    leg.rotateBy = [0, -2, 2];
+    breatherScene.root.nodes.push(leg);
 
 
     breatherScene.treeRenderMultiLevel();
