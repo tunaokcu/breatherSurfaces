@@ -21,8 +21,10 @@ export default class Breather extends ParametricSurface{
     }
 }
 
+//This DOES return vec3
 function normals(aa, u, v, w){
-    return cross(uPartials(aa, u, v, w), vPartials(aa, u, v, w));
+    let res = cross(uPartials(aa, u, v, w), vPartials(aa, u, v, w));
+    return res;
 }
 function uPartials(aa, u, v, w){
     return vec3(dxdu(aa, u, v, w),

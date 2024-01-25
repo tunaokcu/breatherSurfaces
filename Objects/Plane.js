@@ -8,31 +8,29 @@ export default class Cube extends GeometricObject{
     constructor(){
         super();
 
-        this.initCube();
+        this.initPlane();
     }
 
-    initCube()
+    initPlane()
     {
         this.points = [];
         this.normals = [];
         this.quad( 1, 0, 3, 2 );
+        /*
         this.quad( 2, 3, 7, 6 );
         this.quad( 3, 0, 4, 7 );
         this.quad( 6, 5, 1, 2 );
         this.quad( 4, 5, 6, 7 );
-        this.quad( 5, 4, 0, 1 );
+        this.quad( 5, 4, 0, 1 );*/
     }
     quad(a, b, c, d)
     {
+        let z = 0
         var vertices = [
-            vec4( -0.5, -0.5,  0.5, 1.0 ),
-            vec4( -0.5,  0.5,  0.5, 1.0 ),
-            vec4(  0.5,  0.5,  0.5, 1.0 ),
-            vec4(  0.5, -0.5,  0.5, 1.0 ),
-            vec4( -0.5, -0.5, -0.5, 1.0 ),
-            vec4( -0.5,  0.5, -0.5, 1.0 ),
-            vec4(  0.5,  0.5, -0.5, 1.0 ),
-            vec4(  0.5, -0.5, -0.5, 1.0 )
+            vec4( -0.5, -0.5,  z, 1.0 ), //0
+            vec4( -0.5,  0.5,  z, 1.0 ), //1
+            vec4(  0.5,  0.5,  z, 1.0 ), //2
+            vec4(  0.5, -0.5,  z, 1.0 ) //3
         ];
 
         var t1 = subtract(vertices[b], vertices[a]);

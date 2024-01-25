@@ -6,6 +6,7 @@ import Scene from "./Scene/Scene.js";
 import TestScene from "./Scene/TestScene.js";
 import Breather from "./Objects/Breather.js";
 import Sphere from "./Objects/Sphere.js";
+import Plane from "./Objects/Plane.js";
 
 function main(){
     //!Our problem with vertex rendering can be seen clearly here
@@ -14,11 +15,10 @@ function main(){
     cubeScene.object = new Cube();
     instantiateUI(cubeScene);
     cubeScene.renderUnconditional();
-    console.log("here")
     */
 
     let breatherScene = new Scene();
-    breatherScene.object = new Breather();
+    breatherScene.object = new Plane();//Sphere(0, 2*Math.PI, 30*Math.PI/360, 0, 2*Math.PI, 30*Math.PI/360, 0.01);
     breatherScene.renderUnconditional();
     //breatherScene.render();
     instantiateUI(breatherScene);

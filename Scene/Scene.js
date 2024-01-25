@@ -1,8 +1,9 @@
-import {flatten, vec3} from "../Common/MV.js";
+import {flatten, vec3, translate, mult} from "../Common/MV.js";
 import {WebGLUtils} from "../Common/myWebGLUtils.js";
 import {initShaders} from "../Common/initShaders.js";
 import Camera from "./Camera.js";
 import AggregateLight from "./AggregateLight.js";
+import Sphere from "../Objects/Sphere.js";
 
 export default class Scene{
     canvas;
@@ -54,22 +55,24 @@ export default class Scene{
         switch(this.renderState){
             case "mesh":
             case "points": this.calculateMesh(); break; 
-            case "solid":   this.lighting.sendLightValues(this.gl, this.object);  this.calculateSolid(); break; //console.log(this.normals); this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW); break;
+            case "solid":   this.lighting.sendLightValues(this.gl, this.object);  this.calculateSolid(); break; // this.gl.bufferData(this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW); break;
         }
 
         let stateFloat =  Number(this.renderState ==="solid");
-        this.gl.uniform1f( this.gl.getUniformLocation(this.program, "isSolid"), stateFloat);
+        this.gl.uniform1f( this.gl.getUniformLocation(this.program, "isSolid"), stateFloat); 
 
         //!This is rendering stuff
         if (this.renderState === "solid"){
             this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
-            this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW );
-            this.gl.vertexAttribPointer( this.vNormal, 4, this.gl.FLOAT, false, 0, 0 );
+            this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW );
+            this.gl.vertexAttribPointer( this.vNormal, 3, this.gl.FLOAT, false, 0, 0 ); //!IMPORTANT BUG! normals were kept in vec3 format but sent 4 by 4 
             this.gl.enableVertexAttribArray( this.vNormal );
         }
+        let allVertices = [...flatten(this.vertices)].concat(...flatten(this.lightSphereVertices));
+        console.log(allVertices);
 
         this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
-        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW );
+        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(allVertices), this.gl.STATIC_DRAW );
         this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
         this.gl.enableVertexAttribArray( this.vPosition );
 
@@ -83,7 +86,7 @@ export default class Scene{
         this.vertices = this.object.getSolidVertices();
         switch(this.normalType){
             case "vertexNormals": this.calculateVertexNormals(); break;
-            case "trueNormals": this.calculateTrueNormals(); console.log("calculated true normals"); break;
+            case "trueNormals": this.calculateTrueNormals(); break;
         }
     }
 
@@ -110,16 +113,54 @@ export default class Scene{
     render(){
         this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);    
 
-        console.log(this.vertices)
-        console.log(this.normals);
+        console.log(this.vertices);
+
 
         switch(this.renderState){
             case "mesh": this.gl.drawArrays(this.gl.LINES, 0, this.vertices.length); break;
-            case "points": this.gl.drawArrays(this.gl.POINTS,0, this.vertices.length); console.log("CALLED"); break;
+            case "points": this.gl.drawArrays(this.gl.POINTS,0, this.vertices.length); break;
             case "solid": this.gl.drawArrays(this.gl.TRIANGLES, 0, this.vertices.length); break; 
         }   
+
+        //Experimental
+        this.showLight();
     }
     
+    lightSphere = new Sphere(0, 2*Math.PI, 30*Math.PI/360, 0, 2*Math.PI, 30*Math.PI/360, 0.1);
+    lightSphereVertices = this.lightSphere.getSolidVertices();
+
+    showLight(){
+        /*
+        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
+        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(), this.gl.STATIC_DRAW );
+        this.gl.vertexAttribPointer( this.vNormal, 3, this.gl.FLOAT, false, 0, 0 ); //!IMPORTANT BUG! normals were kept in vec3 format but sent 4 by 4 
+        this.gl.enableVertexAttribArray( this.vNormal );*/
+
+        //Buffer light sphere vertices
+        /*
+        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.lightSphereBuffer );
+        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.lightSphereVertices), this.gl.STATIC_DRAW );
+        this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
+        this.gl.enableVertexAttribArray( this.vPosition );
+        */
+        //Translate sphere by light location
+        let lightPosition = this.lighting.pointLight.lightPosition;
+        let mv = this.camera.modelViewMatrix; 
+        let translation = translate(lightPosition[0], lightPosition[1], lightPosition[2]);
+        let mvFinal = mult(mv, translation);
+
+
+        //Send to gpu
+        this.gl.uniformMatrix4fv( this.gl.getUniformLocation( this.program, "modelViewMatrix" ), false, flatten(mvFinal) );
+
+
+        //Draw everything
+        this.gl.drawArrays(this.gl.TRIANGLES, this.vertices.length, this.lightSphereVertices.length);
+
+        //Fix mv 
+    }
+    
+
     updatePointLightPosition(newPosition){
         this.lighting.pointLight.setAndSendLightPosition(newPosition);
         this.render();

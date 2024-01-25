@@ -107,7 +107,7 @@
     
         float noise = pnoise(vPosition.xyz, vec3(noiseParam));
         float displacement = noise / noiseParam;
-        vec3 displacementVector = vec3(1.0, 1.0, 1.0) * displacement;
+        vec3 displacementVector = normalize(vNormal) * displacement;
     
         vec4 positionNew = vPosition + vec4(displacementVector.x, displacementVector.y, displacementVector.z, 1);
     
@@ -122,7 +122,7 @@
         vec3 E = normalize( -pos );
         vec3 H = normalize( L + E );
         
-        vec4 NN = vec4(vNormal,0);
+        vec4 NN = vec4(normalize(vNormal),0);
     
         // Transform vertex normal into eye coordinates
            
