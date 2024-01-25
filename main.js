@@ -7,6 +7,7 @@ import TestScene from "./Scene/TestScene.js";
 import Breather from "./Objects/Breather.js";
 import Sphere from "./Objects/Sphere.js";
 import Plane from "./Objects/Plane.js";
+import SceneNode from "./Objects/SceneNode.js"
 
 function main(){
     //!Our problem with vertex rendering can be seen clearly here
@@ -18,10 +19,20 @@ function main(){
     */
 
     let breatherScene = new Scene();
-    breatherScene.object = new Plane();//Sphere(0, 2*Math.PI, 30*Math.PI/360, 0, 2*Math.PI, 30*Math.PI/360, 0.01);
-    breatherScene.renderUnconditional();
+
+    let planeNode = new SceneNode(new Plane());
+    breatherScene.tree.push(planeNode);
+
+    let sphereNode = new SceneNode(new Sphere());
+    sphereNode.scaleBy = [2,2,2];//[0.3, 0.3, 0.3];
+    sphereNode.translateBy = [5, 0, 0]
+    sphereNode.rotateBy = [90, 1, 1]
+    breatherScene.tree.push(sphereNode);
+
+    breatherScene.treeInit();
+    breatherScene.treeRender();
     //breatherScene.render();
-    instantiateUI(breatherScene);
+    //instantiateUI(breatherScene);
 
 
     /*Experiment with multi-screen rendering success

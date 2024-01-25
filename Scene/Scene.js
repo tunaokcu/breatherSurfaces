@@ -48,8 +48,57 @@ export default class Scene{
 
         this.renderState = "solid";
         this.renderStateChanged = true;
+
+        this.tree = [];
     }
 
+    treeInit(){
+        //Create vertices array
+        this.treeVertices = [];
+
+        //Aggregate all vertices in an array, keep track of the number of vertices in each object
+        //Assuming no children for now(i.e. no models)
+        for (const node of this.tree){
+            let curVertices = flatten(node.object.getSolidVertices());
+            node.numOfVertices = curVertices.length;
+
+            this.treeVertices = this.treeVertices.concat(...curVertices);
+        }   
+
+        console.log(flatten(this.treeVertices))
+
+        //Buffer the vertices
+        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
+        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.treeVertices), this.gl.STATIC_DRAW );
+        
+        this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
+        this.gl.enableVertexAttribArray( this.vPosition );
+
+    }
+
+    treeRender(){
+        let initialMV = this.camera.modelViewMatrix;
+
+        this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);    
+
+        let i = 0;
+
+        for (const node of this.tree){
+            console.log(node.numOfVertices);
+
+            let instanceMatrix = node.getInstanceMatrix(initialMV);
+            this.gl.uniformMatrix4fv( this.gl.getUniformLocation( this.program, "modelViewMatrix" ), false, flatten(instanceMatrix) );
+
+            //Send light values to GPU
+            this.lighting.sendLightValues(this.gl, node.object);
+
+            this.gl.drawArrays(this.gl.TRIANGLES, i, node.numOfVertices);
+
+            i += node.numOfVertices;
+        }
+
+
+    }
 
     calculateAndBuffer(){
         switch(this.renderState){

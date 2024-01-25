@@ -1,8 +1,11 @@
-import { scale4, rotate, translate, mat4 } from "../Common/MV.js";
+import { scale4, rotate, translate, mat4, mult } from "../Common/MV.js";
 
-class SceneNode{
+export default class SceneNode{
     constructor(object, scaleBy=[1,1,1], rotateBy=[0,0,0], translateBy=[0,0,0]){
         this.object = object;
+        this.scaleBy = scaleBy;
+        this.rotateBy = rotateBy;
+        this.translateBy = translateBy;
         this.#initMV(scaleBy, rotateBy, translateBy);
     }
 
@@ -23,7 +26,8 @@ class SceneNode{
     }
 
     getInstanceMatrix(modelViewMatrix){
-        return mult(this.modelViewMatrix, this.mv);
+        this.#initMV(this.scaleBy, this.rotateBy, this.translateBy)
+        return mult(modelViewMatrix, this.mv);
     }
 
 }
