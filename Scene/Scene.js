@@ -1,9 +1,10 @@
-import {flatten, vec3, translate, mult} from "../Common/MV.js";
+import {flatten, vec3, translate, mult, mat4} from "../Common/MV.js";
 import {WebGLUtils} from "../Common/myWebGLUtils.js";
 import {initShaders} from "../Common/initShaders.js";
 import Camera from "./Camera.js";
 import AggregateLight from "./AggregateLight.js";
 import Sphere from "../Objects/Sphere.js";
+import SceneNode from "../Objects/SceneNode.js";
 
 export default class Scene{
     canvas;
@@ -50,8 +51,68 @@ export default class Scene{
         this.renderStateChanged = true;
 
         this.tree = [];
+        this.root = new SceneNode(); //Placeholder
+        //TODO implement this and light nodes
+        this.currentCamera = this.camera;//new CameraNode(new Camera(this.gl, this.program, -10, 10, 6, 0, 0.0,  -30.0, 30.0, 30.0, -30.0, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0)))
     }
 
+    treeRenderMultiLevel(){
+        //Clear
+        this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);    
+
+        //Enable 
+        this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
+        this.gl.enableVertexAttribArray( this.vPosition );
+
+        //Send camera
+        this.currentCamera.setProjectionMatrix(this.gl);
+
+
+
+        //Traverse tree
+        for (const childNode of this.root.nodes){
+            this.treeTraversal(childNode, this.currentCamera.modelViewMatrix)
+        }
+    }
+
+    treeTraversal(node, MV){
+        if (node != null || node != undefined){
+            let instanceMatrix = node.getInstanceMatrix(MV);
+            this.renderNode(node, instanceMatrix);
+            
+            for (const childNode of node.nodes){
+                console.log("here")
+                this.treeTraversal(childNode, instanceMatrix)
+            }
+        }
+    }
+
+    renderNode(node, MV){
+        console.log(node, MV);
+        console.log(flatten(MV));
+
+        //Send light values to GPU  
+        this.lighting.sendLightValues(this.gl, node.object);
+
+        //Send MV
+        this.gl.uniformMatrix4fv( this.gl.getUniformLocation( this.program, "modelViewMatrix" ), false, flatten(MV) );
+
+        //Calculate the vertices and store them in the node
+        if (node.object.vertices == null || node.object.vertices == undefined){
+            node.object.vertices = node.object.getSolidVertices();
+        }
+
+        //Buffer the vertices
+        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
+        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(node.object.vertices), this.gl.STATIC_DRAW );
+        this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
+        this.gl.enableVertexAttribArray( this.vPosition );
+
+        //Draw
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, node.object.vertices.length);
+    }
+
+    //!BUG random plane? appears
     treeInit(){
         //Create vertices array
         this.treeVertices = [];
@@ -70,7 +131,7 @@ export default class Scene{
         //Buffer the vertices
         this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
         this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.treeVertices), this.gl.STATIC_DRAW );
-        
+
         this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
         this.gl.enableVertexAttribArray( this.vPosition );
 
@@ -210,7 +271,7 @@ export default class Scene{
 
     updatePointLightPosition(newPosition){
         this.lighting.pointLight.setAndSendLightPosition(newPosition);
-        this.render();
+        this.treeRenderMultiLevel();
     }
 
 
@@ -220,7 +281,7 @@ export default class Scene{
         this.camera.updateMatrices();
         this.camera.setShaderMatrices(this.gl);
 
-        this.render();
+        this.treeRenderMultiLevel();
     }
 
     zoomIn(){

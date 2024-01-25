@@ -4,6 +4,8 @@
 <script id="vertex-shader" type="x-shader/x-vertex">
 precision mediump float;
 
+//   TODO FIX LATER//https://perso.univ-lyon1.fr/jean-claude.iehl/Public/educ/GAMA/2007/normal_transforms.html
+//uniform mat4 normalMV;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
@@ -27,6 +29,10 @@ varying vec4 fColor;
 void main(){
   
     gl_Position = projectionMatrix*modelViewMatrix*vPosition;
+
+    //mat4 invertedMV = invert(modelViewMatrix);
+    //mat4 normalMV = transpose(invertedMV);
+
 
     //gl_PointSize = 5.0;
     //varyingNormal = vNormal;

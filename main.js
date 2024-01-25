@@ -21,6 +21,7 @@ function main(){
     let breatherScene = new Scene();
 
     let planeNode = new SceneNode(new Plane());
+    planeNode.scaleBy = [10, 10, 10];
     breatherScene.tree.push(planeNode);
 
     let sphereNode = new SceneNode(new Sphere());
@@ -29,10 +30,15 @@ function main(){
     sphereNode.rotateBy = [90, 1, 1]
     breatherScene.tree.push(sphereNode);
 
+    breatherScene.root.nodes.push(planeNode);
+    breatherScene.root.nodes.push(sphereNode);
+
+    
     breatherScene.treeInit();
     breatherScene.treeRender();
+    //breatherScene.treeRenderMultiLevel();
     //breatherScene.render();
-    //instantiateUI(breatherScene);
+    instantiateUI(breatherScene);
 
 
     /*Experiment with multi-screen rendering success

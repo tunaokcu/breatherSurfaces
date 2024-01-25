@@ -41,8 +41,11 @@ export default class Camera{
     }
 
     setShaderMatrices(gl){
-        console.log("here");
         gl.uniformMatrix4fv( this.modelViewMatrixLoc, false, flatten(this.modelViewMatrix) );
+        gl.uniformMatrix4fv( this.projectionMatrixLoc, false, flatten(this.projectionMatrix) );
+    }
+
+    setProjectionMatrix(gl){
         gl.uniformMatrix4fv( this.projectionMatrixLoc, false, flatten(this.projectionMatrix) );
     }
 
