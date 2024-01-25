@@ -125,6 +125,7 @@ export default class ParametricSurface extends GeometricObject{
 
     getVertexNormals(){
         let points = this.samplePoints();
+        
         let allNormals = [];
         
         for (let i = 0; i < points.length-2; i++){

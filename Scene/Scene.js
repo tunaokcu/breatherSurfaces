@@ -63,7 +63,7 @@ export default class Scene{
         //!This is rendering stuff
         if (this.renderState === "solid"){
             this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
-            this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW );
+            this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.vertices), this.gl.STATIC_DRAW );
             this.gl.vertexAttribPointer( this.vNormal, 4, this.gl.FLOAT, false, 0, 0 );
             this.gl.enableVertexAttribArray( this.vNormal );
         }
