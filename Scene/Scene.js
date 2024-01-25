@@ -78,9 +78,7 @@ export default class Scene{
 
 
     }
-    calculateMesh(){
-        this.vertices =  this.object.getMeshVertices();
-    }
+
 
     calculateSolid(){
         this.vertices = this.object.getSolidVertices();
@@ -233,4 +231,11 @@ export default class Scene{
             this.renderUnconditional();
         }   
     }
+
+    /*
+    calculateMesh(){
+        this.vertices =  this.object.getMeshVertices();
+    }
+    */
+
 }
