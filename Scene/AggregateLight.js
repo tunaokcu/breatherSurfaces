@@ -10,7 +10,6 @@ export default class AggregateLight{
     }
 
     sendLightValues(gl, object){
-        console.log(object.material)
         this.environmentLight.calculateAndSendProducts(gl, object.material);
     }
     calculateLighting(gl, program, object){

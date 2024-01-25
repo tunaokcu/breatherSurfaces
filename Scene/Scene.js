@@ -16,18 +16,14 @@ export default class Scene{
 
     camera;
     lighting;
-    objects;
+    object;
 
+    constructor(canvasId="gl-canvas", backgroundColor=[1.0, 1.0, 1.0, 1.0]){ this.init(canvasId, backgroundColor);}
 
-    constructor(backgroundColor=[1.0, 1.0, 1.0, 1.0]){
-        this.init(backgroundColor);
-    }
-    
-    //If for some reason shader and canvas ids must be changed, make sure to update it here as well
-    init(backgroundColor){
+    init(canvasId, backgroundColor){
         this.normalType = "vertexNormals";
 
-        this.canvas = document.getElementById( "gl-canvas" );
+        this.canvas = document.getElementById(canvasId);
         this.gl = WebGLUtils.setupWebGL( this.canvas );    
         if ( !this.gl ) { alert( "WebGL isn't available" ); }           
 
@@ -62,12 +58,10 @@ export default class Scene{
         }
 
         let stateFloat =  Number(this.renderState ==="solid");
-        console.log(stateFloat);
         this.gl.uniform1f( this.gl.getUniformLocation(this.program, "isSolid"), stateFloat);
 
         //!This is rendering stuff
         if (this.renderState === "solid"){
-            console.log("buffering normals");
             this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
             this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW );
             this.gl.vertexAttribPointer( this.vNormal, 4, this.gl.FLOAT, false, 0, 0 );
@@ -86,32 +80,16 @@ export default class Scene{
     }
 
     calculateSolid(){
-        this.calculateSolidVertices();        
+        this.vertices = this.object.getSolidVertices();
         switch(this.normalType){
             case "vertexNormals": this.calculateVertexNormals(); break;
             case "trueNormals": this.calculateTrueNormals(); console.log("calculated true normals"); break;
-        }
-    }
-    calculateSolidVertices(){
-        //? Why
-        this.vertices = this.object.getSolidVertices();
-
-        this.solidColumns = this.vertices[0].length;
-        
-        let temp = this.vertices;
-        this.vertices = [];
-
-        for (let i = 0; i < temp.length; i++) {
-            for (let j = 0; j < temp[0].length; j++) {
-                this.vertices.push(temp[i][j]);
-            }
         }
     }
 
     calculateTrueNormals(){
         //? Why
         this.normals = this.object.getTrueNormals();
-        console.log(this.normals[0])
         return;
             
         this.solidColumns = this.normals.length;
@@ -132,19 +110,14 @@ export default class Scene{
     render(){
         this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);    
 
-        console.log("rendering");
+        console.log(this.vertices)
+        console.log(this.normals);
+
         switch(this.renderState){
             case "mesh": this.gl.drawArrays(this.gl.LINES, 0, this.vertices.length); break;
-            case "points": this.gl.drawArrays(this.gl.POINTS,0, this.vertices.length); break;
-            case "solid": this.renderSolid(); break; 
+            case "points": this.gl.drawArrays(this.gl.POINTS,0, this.vertices.length); console.log("CALLED"); break;
+            case "solid": this.gl.drawArrays(this.gl.TRIANGLES, 0, this.vertices.length); break; 
         }   
-    }
-
-    renderSolid(){
-        for (let i = 0; i < this.vertices.length; i+= this.solidColumns ){
-            this.gl.drawArrays(this.gl.TRIANGLE_STRIP, i, this.solidColumns);
-        }
-
     }
     
     updatePointLightPosition(newPosition){

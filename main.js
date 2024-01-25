@@ -1,9 +1,40 @@
 import BreatherScene from "./Scene/BreatherScene.js";
+import Cube from "./Objects/Cube.js";
+import Torus from "./Objects/Torus.js";
+
+import Scene from "./Scene/Scene.js";
+import TestScene from "./Scene/TestScene.js";
+import Breather from "./Objects/Breather.js";
+import Sphere from "./Objects/Sphere.js";
 
 function main(){
-    let scene = new BreatherScene();
-    instantiateUI(scene);
-    scene.renderUnconditional();
+    //!Our problem with vertex rendering can be seen clearly here
+    /*
+    let cubeScene = new Scene();
+    cubeScene.object = new Cube();
+    instantiateUI(cubeScene);
+    cubeScene.renderUnconditional();
+    console.log("here")
+    */
+
+    let breatherScene = new Scene();
+    breatherScene.object = new Breather();
+    breatherScene.renderUnconditional();
+    //breatherScene.render();
+    instantiateUI(breatherScene);
+
+
+    /*Experiment with multi-screen rendering success
+    let experimentalScene = new BreatherScene("second-screen");
+    experimentalScene.renderUnconditional();
+    for (let i = 0; i < 2; i++){
+        experimentalScene.zoomIn();
+    }
+
+    experimentalScene.setTestParams()
+    experimentalScene.updateTheta(45);
+    */
+    
 }
 
 window.onload = main;

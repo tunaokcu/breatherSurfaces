@@ -29,61 +29,12 @@ export default class ParametricSurface extends GeometricObject{
              throw new Error("parametricFunction method must be implemented");
          };
     }
-
-
-
-    //TODO we can probably delete this
-    samplePoints(object=this){
-        let pointsInMesh = [];
-
-        let i = 0;
-        for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
-            
-            for(let v = object.vStart; v < object.vEnd; v += object.vDelta){
-                pointsInMesh.push(object.parametricFunction(u, v));
-            }
-            i += 1;
-        }
-        
-        return pointsInMesh;
-    }
-
-    sampleSolidStrip(object=this){
-        
-        let pointsInMesh = [];
-
-        let i = 0;
-        for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
-            pointsInMesh.push([]);
-            
-            for(let v = object.vStart; v < object.vEnd; v += object.vDelta){
-                pointsInMesh[i].push(object.parametricFunction(u, v));
-            }
-            pointsInMesh[i].push(pointsInMesh[i][0])
-            i += 1;
-        }
-        //console.log(pointsInMesh[0])
-        pointsInMesh.push(pointsInMesh[0])
-
-        
-        let pointsInMeshStrip = [];
-
-        for (let i = 0; i < pointsInMesh.length-1; i++) {
-            pointsInMeshStrip.push([]);
-
-            for(let j = 0; j < pointsInMesh[i].length-1; j++){
-                pointsInMeshStrip[i].push(pointsInMesh[i][j]);
-                pointsInMeshStrip[i].push(pointsInMesh[i+1][j]);
-            }
-        }
-        this.pointsInMeshStrip = pointsInMeshStrip;
-        return pointsInMeshStrip;
-    }
-
     getSolidVertices(){
-        return this.sampleSolidStrip();//this.sampleSolid();
+        return this.sampleSolid();
     }
 
+    //? WHY ARE THERE TWO
+    /*
     getTangents(){
         let points = this.pointsInMeshStrip;
         this.tangents = [];
@@ -96,13 +47,88 @@ export default class ParametricSurface extends GeometricObject{
             }
         }        
     }
+    getTangents(){
+        if (this.allNormals == null){
+            this.getVertexNormals()
+        }
+
+    }
+    */
+
+
+    //!Two essential functions. We sample the points on the surface using samplePoints and construct the surface with them using sampleSolid
+    samplePoints(object=this){
+        let pointsInMesh = [];
+
+        let i = 0;
+        for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
+            pointsInMesh.push([])
+            for(let v = object.vStart; v < object.vEnd; v += object.vDelta){
+                pointsInMesh[i].push(object.parametricFunction(u, v));
+            }
+            i += 1;
+        }
+        
+        return pointsInMesh;
+    }
+    sampleSolid(object=this){  
+        let pointsInMesh = this.samplePoints(object); //doesn't wrap around, so it should be made to wrap around
+        console.log(pointsInMesh);
+
+        let vertices = [];
+
+        let leftUp, rightUp, leftDown, rightDown;
+        let iDown, jRight
+        let triangleOne, triangleTwo; //two triangles per square visited
+
+
+        for (let i = 0; i < pointsInMesh.length; i++){
+            iDown = i + 1 == pointsInMesh.length ? 0 : i+1; //wrap around
+
+            for (let j = 0; j < pointsInMesh[i].length; j++){
+                jRight = j + 1 == pointsInMesh[i].length ? 0 : j+1;
+
+                leftUp = pointsInMesh[i][j]; //upper left square
+                rightUp = pointsInMesh[i][jRight];
+                leftDown = pointsInMesh[iDown][j];
+                rightDown = pointsInMesh[iDown][jRight];
+
+                //console.log(i, j, iDown, jRight)
+
+                //! Anything could go wrong here... way too much working with objects without copying
+                triangleOne = [leftUp, leftDown, rightDown]; //! going counter clockwise.. is this right?
+                triangleTwo = [rightDown, rightUp, leftUp];
+                
+                vertices = vertices.concat(...triangleOne, ...triangleTwo);
+
+            }
+        }
+    
+        return vertices;
+    }
+
+
+
+    unravel(points){
+        console.log(points)
+        let res = [];
+
+        for (const pointsArr of points){
+            res = res.concat(pointsArr);
+        }
+        console.log(res)
+        return res;
+    }
+
+
+
 
     getVertexNormals(){
-        let points = this.pointsInMeshStrip;
+        let points = this.samplePoints();
         let allNormals = [];
         
-        for (let i = 0; i < this.pointsInMeshStrip.length-2; i++){
-            for (let j = 0; j < this.pointsInMeshStrip[i].length-2; j++){
+        for (let i = 0; i < points.length-2; i++){
+            for (let j = 0; j < points[i].length-2; j++){
                 //console.log("calculating normals")
                 // calculate the edges (vectors) of the current fragment
                 let oneTotwo = subtract(points[i][j+1],points[i][j]);
@@ -148,23 +174,9 @@ export default class ParametricSurface extends GeometricObject{
         this.allNormals = allNormals;
         return allNormals;
     }
-    getTangents(){
-        if (this.allNormals == null){
-            this.getVertexNormals()
-        }
 
-    }
 
-    bumpMap(normal1, u, v){
-        if (this.bumpMappingOn){
-            let bumpFactor = perlin.get(u, v);//perlin.get(this.pointsInMeshStrip[i][j][0], this.pointsInMeshStrip[i][j][1]);
-            perlin.seed()
-            normal1[0] *= bumpFactor;
-            normal1[1] *= bumpFactor;
-            normal1[2]  *= bumpFactor;
-            normal1 = normalize(normal1);
-        }
-    }
+
     getTrueNormals(){
         let object = this;
         let pointsInMesh = [];
@@ -182,9 +194,9 @@ export default class ParametricSurface extends GeometricObject{
             i += 1;
         }
         
-        console.log(pointsInMesh)
         return pointsInMesh;
     }
+    /*
     sampleSolid(){
         let object = this;
         let pointsInMesh = [];
@@ -219,6 +231,7 @@ export default class ParametricSurface extends GeometricObject{
 
         return neighborsInMesh
     }
+    */
 
     getMeshVertices(){
         return this.sampleMesh();
@@ -311,5 +324,14 @@ export default class ParametricSurface extends GeometricObject{
         return res;
     }
 
-
+    bumpMap(normal1, u, v){
+        if (this.bumpMappingOn){
+            let bumpFactor = perlin.get(u, v);//perlin.get(this.pointsInMeshStrip[i][j][0], this.pointsInMeshStrip[i][j][1]);
+            perlin.seed()
+            normal1[0] *= bumpFactor;
+            normal1[1] *= bumpFactor;
+            normal1[2]  *= bumpFactor;
+            normal1 = normalize(normal1);
+        }
+    }
 }

@@ -1,14 +1,14 @@
 import Scene from "./Scene.js";
 import Breather from "../Objects/Breather.js";
 import Cube from "../Objects/Cube.js";
+import Sphere from "../Objects/Sphere.js";
 
 export default class BreatherScene extends Scene{
-    constructor(backgroundColor=[1.0, 1.0, 1.0, 1.0]){
-        super(backgroundColor);
+    constructor(canvasId="gl-canvas", backgroundColor=[1.0, 1.0, 1.0, 1.0]){
+        super(canvasId, backgroundColor);
         
         this.object = new Breather();
         
-        //this.test1()
         this.setTestParams();
     }
 
@@ -47,7 +47,4 @@ export default class BreatherScene extends Scene{
         this.object.vEnd = 37.4;
     }
 
-    test1(){
-        this.object = new Cube();
-    }
 }

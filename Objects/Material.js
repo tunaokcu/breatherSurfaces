@@ -25,4 +25,10 @@ export default class Material{
         this.materialSpecular = color;
         this.materialShininess = 30.0;
     }
+    setLimeGreen(){
+        var color = vec4(50/255, 205/255, 50/255, 0);
+        this.materialAmbient = color;
+        this.materialDiffuse = color;
+        this.materialSpecular = color;
+    }
 }

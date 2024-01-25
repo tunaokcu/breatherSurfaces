@@ -1,0 +1,2 @@
+1) Add lighting back
+2) Compare vertex count between this version of the renderer and the previous one

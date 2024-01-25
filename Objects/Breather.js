@@ -15,22 +15,10 @@ export default class Breather extends ParametricSurface{
     }
 
     trueNormals(u, v){
-        let res = normals(this.aa, u, v, breatherW(this.aa))
-        
-        /*
-        for (let i = 0; i < 3; i++){
-            if (res[i] <= 0){
-                res[i] = getRandomSmallNumber();
-            }
-        }
-        */
+        let res = normals(this.aa, u, v, breatherW(this.aa));
 
         return res
     }
-}
-
-function getRandomSmallNumber(){
-    return 0.05;
 }
 
 function normals(aa, u, v, w){

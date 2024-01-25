@@ -1,4 +1,5 @@
 import Material from "./Material.js";
+import Texture from "./Texture.js";
 
 /*  The code below examplifies a makeshift abstract class. 
   
@@ -17,6 +18,7 @@ export default class GeometricObject{
         }
         
         //2nd
+        /*
         if(this.getMeshVertices == undefined) {
             throw new Error("getMeshVertices method must be implemented");
         }
@@ -27,12 +29,13 @@ export default class GeometricObject{
         
         if(this.getVertexNormals == undefined) {
             throw new Error("getVertexNormals method must be implemented");
-        }
+        }*/
         
         //3rd
         this.material = new Material();
         //TODO a potential are of improvement is to also add a Texture object. This is probably pretty much required for our assignment anyways.
         //TODO, setColor, etc
+        //this.texture = new Texture();
         self.bumpMappingOn = false;
     }
 }

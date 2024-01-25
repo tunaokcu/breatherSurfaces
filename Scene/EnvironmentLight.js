@@ -21,9 +21,6 @@ export default class EnvironmentLight{
         var diffuseProduct = mult(this.diffuseLight, material.materialDiffuse);
         var specularProduct = mult(this.specularLight, material.materialSpecular);
         
-        console.log(ambientProduct);
-        console.log(diffuseProduct);
-        console.log(specularProduct);
 
         gl.uniform4fv(this.ambientProductLoc, flatten(ambientProduct));
         gl.uniform4fv(this.diffuseProductLoc, flatten(diffuseProduct) );

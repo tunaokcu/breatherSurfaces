@@ -1,6 +1,6 @@
 
 import GeometricObject from "./GeometricObject.js";
-import {flatten, vec4} from "../Common/MV.js";
+import {flatten, subtract, cross, vec3, vec4} from "../Common/MV.js";
 
 //Should extend GeometricObject or something of the sort(not high priority, not even relevant to the assignment)
 export default class Cube extends GeometricObject{
@@ -14,6 +14,7 @@ export default class Cube extends GeometricObject{
     initCube()
     {
         this.points = [];
+        this.normals = [];
         this.quad( 1, 0, 3, 2 );
         this.quad( 2, 3, 7, 6 );
         this.quad( 3, 0, 4, 7 );
@@ -33,40 +34,37 @@ export default class Cube extends GeometricObject{
             vec4(  0.5,  0.5, -0.5, 1.0 ),
             vec4(  0.5, -0.5, -0.5, 1.0 )
         ];
-    
-        var vertexColors = [
-            [ 0.0, 0.0, 0.0, 1.0 ],  // black
-            [ 1.0, 0.0, 0.0, 1.0 ],  // red
-            [ 1.0, 1.0, 0.0, 1.0 ],  // yellow
-            [ 0.0, 1.0, 0.0, 1.0 ],  // green
-            [ 0.0, 0.0, 1.0, 1.0 ],  // blue
-            [ 1.0, 0.0, 1.0, 1.0 ],  // magenta
-            [ 0.0, 1.0, 1.0, 1.0 ],  // cyan
-            [ 1.0, 1.0, 1.0, 1.0 ]   // white
-        ];
-    
-        // We need to parition the quad into two triangles in order for
-        // WebGL to be able to render it.  In this case, we create two
-        // triangles from the quad indices
-    
-        //vertex color assigned by the index of the vertex
-    
-        var indices = [ a, b, c, a, c, d ];
-    
-        for ( var i = 0; i < indices.length; ++i ) {
-            this.points.push( vertices[indices[i]] );       
-        }
+
+        var t1 = subtract(vertices[b], vertices[a]);
+        var t2 = subtract(vertices[c], vertices[b]);
+        var normal = vec4(cross(t1, t2));
+     
+     
+        this.points.push(vertices[a]); 
+        this.normals.push(normal); 
+        this.points.push(vertices[b]); 
+        this.normals.push(normal); 
+        this.points.push(vertices[c]); 
+        this.normals.push(normal);   
+        this.points.push(vertices[a]);  
+        this.normals.push(normal); 
+        this.points.push(vertices[c]); 
+        this.normals.push(normal); 
+        this.points.push(vertices[d]); 
+        this.normals.push(normal);   
 
 
     }
 
-
+    getSolidVertices(){
+        return this.getVertices();
+    }
     //TODO should be lines not points
     getVertices(){
         return this.points;
     }
 
-    getNormals(){
-        
+    getVertexNormals(){
+        return this.normals;
     }
 }
