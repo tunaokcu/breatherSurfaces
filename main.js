@@ -12,6 +12,7 @@ import SceneNode from "./Objects/SceneNode.js"
 import Head from "./Octopus/Head.js";
 import Leg from "./Octopus/Leg.js";
 import Octopus from "./Octopus/Octopus.js";
+import KleinBottle from "./Objects/KleinBottle.js";
 
 function main(){
     //!Our problem with vertex rendering can be seen clearly here
@@ -23,7 +24,7 @@ function main(){
     */
 
 
-    lightingTest();
+    trueNormalTest();
 
     /*Experiment with multi-screen rendering success
     let experimentalScene = new BreatherScene("second-screen");
@@ -36,6 +37,20 @@ function main(){
     experimentalScene.updateTheta(45);
     */
     
+}
+function trueNormalTest(){
+    let scene = new Scene();
+    scene.root.nodes.push(new SceneNode(new Breather()));
+    scene.normalType = "trueNormals";
+    scene.treeRenderMultiLevel();
+    instantiateUI(scene);  
+}
+//Doesn't work at all.
+function kleinTest(){
+    let scene = new Scene();
+    scene.root.nodes.push(new SceneNode(new KleinBottle()));
+    scene.treeRenderMultiLevel();
+    instantiateUI(scene); 
 }
 
 function lightingTest(){

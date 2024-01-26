@@ -226,12 +226,11 @@
             let pointsInMesh = [];
 
             for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
-                
                 for(let v = object.vStart; v < object.vEnd; v += object.vDelta){
                     let normal1 = object.trueNormals(u, v);
-                    normal1 = this.bumpMap(normal1, u, v);
-                    
-                    for (let i = 0; i < 6; i++)                    pointsInMesh.push(normal1);
+                    //normal1 = this.bumpMap(normal1, u, v);
+
+                    for (let i = 0; i < 6; i++) pointsInMesh.push(normal1);
                 }
             }
             
@@ -374,5 +373,6 @@
                 normal1[2]  *= bumpFactor;
                 normal1 = normalize(normal1);
             }
+            return normal1;
         }
     }

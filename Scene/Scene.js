@@ -98,20 +98,31 @@ export default class Scene{
 
         //Calculate the normals and store them in the node
         if (node.object.normals == null || node.object.normals == undefined){
-            node.object.normals = node.object.getVertexNormals(); //TODO implement vertex/true normal selection
+            //TODO implement vertex/true normal toggling 
+            if (this.normalType == "vertexNormals"){
+                node.object.normals = node.object.getVertexNormals(); 
+            } 
+            else if (this.normalType == "trueNormals"){
+                node.object.normals = node.object.getTrueNormals();
+            }
         }
+
+
+
+        //!THE ORDER MATTERS... WHY? (if we buffer the vertices first then the normals it doesn't work)
+        //Buffer the normals
+        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
+        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(node.object.normals), this.gl.STATIC_DRAW );
+        this.gl.vertexAttribPointer( this.vNormal, 3, this.gl.FLOAT, false, 0, 0 );
+        this.gl.enableVertexAttribArray( this.vNormal );
 
         //Buffer the vertices
         this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
         this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(node.object.vertices), this.gl.STATIC_DRAW );
         this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
         this.gl.enableVertexAttribArray( this.vPosition );
+    
 
-        //Buffer the normals
-        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
-        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(node.object.normals), this.gl.STATIC_DRAW );
-        this.gl.vertexAttribPointer( this.vNormal, 3, this.gl.FLOAT, false, 0, 0 );
-        this.gl.enableVertexAttribArray( this.vNormal );
 
         //Draw
         this.gl.drawArrays(this.gl.TRIANGLES, 0, node.object.vertices.length);
@@ -136,7 +147,6 @@ export default class Scene{
             this.gl.enableVertexAttribArray( this.vNormal );
         }
         let allVertices = [...flatten(this.vertices)].concat(...flatten(this.lightSphereVertices));
-        console.log(allVertices);
 
         this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
         this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(allVertices), this.gl.STATIC_DRAW );
@@ -177,9 +187,6 @@ export default class Scene{
 
     render(){
         this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);    
-
-        console.log(this.vertices);
-
 
         switch(this.renderState){
             case "mesh": this.gl.drawArrays(this.gl.LINES, 0, this.vertices.length); break;
