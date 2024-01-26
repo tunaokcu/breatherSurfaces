@@ -9,7 +9,7 @@ export default class Leg extends SceneNode{
         super();
         
         this.nodes = [new UpperLeg()];
-        this.nodes[0].translateBy = [0, -4, 0]
+        //this.nodes[0].translateBy = [0, -4, 0]
 
         this.nodes[0].nodes = [new MiddleLeg()];
         this.nodes[0].nodes[0].translateBy = [0, -3, 0];

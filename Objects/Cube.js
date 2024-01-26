@@ -53,7 +53,7 @@ export default class Cube extends GeometricObject{
         this.points.push(vertices[d]); 
         this.normals.push(normal);   
 
-
+        console.log(this.normals)
     }
 
     getSolidVertices(){

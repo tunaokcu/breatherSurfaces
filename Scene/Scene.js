@@ -67,8 +67,6 @@ export default class Scene{
         //Send camera
         this.currentCamera.setProjectionMatrix(this.gl);
 
-
-
         //Traverse tree
         for (const childNode of this.root.nodes){
             this.treeTraversal(childNode, this.currentCamera.modelViewMatrix)
@@ -77,13 +75,10 @@ export default class Scene{
 
     treeTraversal(node, MV){
         if (node != null || node != undefined){
-
             //Draw only if the node has an object. Nodes can also just be containers for other nodes.
             if (node.object != null || node.object != undefined){ this.renderNode(node, node.getInstanceMatrix(MV));}
             
-            for (const childNode of node.nodes){
-                console.log("here")
-                
+            for (const childNode of node.nodes){                
                 this.treeTraversal(childNode, node.getModelViewMatrix(MV))
             }
         }
@@ -101,64 +96,27 @@ export default class Scene{
             node.object.vertices = node.object.getSolidVertices();
         }
 
+        //Calculate the normals and store them in the node
+        if (node.object.normals == null || node.object.normals == undefined){
+            node.object.normals = node.object.getVertexNormals(); //TODO implement vertex/true normal selection
+        }
+
         //Buffer the vertices
         this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
         this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(node.object.vertices), this.gl.STATIC_DRAW );
         this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
         this.gl.enableVertexAttribArray( this.vPosition );
 
+        //Buffer the normals
+        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
+        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(node.object.normals), this.gl.STATIC_DRAW );
+        this.gl.vertexAttribPointer( this.vNormal, 3, this.gl.FLOAT, false, 0, 0 );
+        this.gl.enableVertexAttribArray( this.vNormal );
+
         //Draw
         this.gl.drawArrays(this.gl.TRIANGLES, 0, node.object.vertices.length);
     }
 
-    //!BUG random plane? appears
-    treeInit(){
-        //Create vertices array
-        this.treeVertices = [];
-
-        //Aggregate all vertices in an array, keep track of the number of vertices in each object
-        //Assuming no children for now(i.e. no models)
-        for (const node of this.tree){
-            let curVertices = flatten(node.object.getSolidVertices());
-            node.numOfVertices = curVertices.length;
-
-            this.treeVertices = this.treeVertices.concat(...curVertices);
-        }   
-
-        console.log(flatten(this.treeVertices))
-
-        //Buffer the vertices
-        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
-        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.treeVertices), this.gl.STATIC_DRAW );
-
-        this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
-        this.gl.enableVertexAttribArray( this.vPosition );
-
-    }
-
-    treeRender(){
-        let initialMV = this.camera.modelViewMatrix;
-
-        this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);    
-
-        let i = 0;
-
-        for (const node of this.tree){
-            console.log(node.numOfVertices);
-
-            let instanceMatrix = node.getInstanceMatrix(initialMV);
-            this.gl.uniformMatrix4fv( this.gl.getUniformLocation( this.program, "modelViewMatrix" ), false, flatten(instanceMatrix) );
-
-            //Send light values to GPU
-            this.lighting.sendLightValues(this.gl, node.object);
-
-            this.gl.drawArrays(this.gl.TRIANGLES, i, node.numOfVertices);
-
-            i += node.numOfVertices;
-        }
-
-
-    }
 
     calculateAndBuffer(){
         switch(this.renderState){
@@ -325,7 +283,7 @@ export default class Scene{
     incrementLightLocation(x, y, z){
         this.lighting.pointLight.incrementLightLocation(this.gl, x, y, z);
         if (this.renderState === "solid"){
-            this.render();
+            this.treeRenderMultiLevel();
         }
     }
 

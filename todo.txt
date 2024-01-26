@@ -1,6 +1,9 @@
 1) Add lighting back
 2) Compare vertex count between this version of the renderer and the previous one
 
+3)There is no advantage to keeping point and environment light seperate. Fix this.
 
 idea: hyperboloids
 https://en.wikipedia.org/wiki/Hyperboloid
+
+!NOTE: If seams appear you are probably sending vec3 values 4 at a time.

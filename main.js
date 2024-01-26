@@ -11,6 +11,7 @@ import SceneNode from "./Objects/SceneNode.js"
 
 import Head from "./Octopus/Head.js";
 import Leg from "./Octopus/Leg.js";
+import Octopus from "./Octopus/Octopus.js";
 
 function main(){
     //!Our problem with vertex rendering can be seen clearly here
@@ -21,6 +22,30 @@ function main(){
     cubeScene.renderUnconditional();
     */
 
+
+    lightingTest();
+
+    /*Experiment with multi-screen rendering success
+    let experimentalScene = new BreatherScene("second-screen");
+    experimentalScene.renderUnconditional();
+    for (let i = 0; i < 2; i++){
+        experimentalScene.zoomIn();
+    }
+
+    experimentalScene.setTestParams()
+    experimentalScene.updateTheta(45);
+    */
+    
+}
+
+function lightingTest(){
+    let scene = new Scene();
+    scene.root.nodes.push(new SceneNode(new Cube()));
+    scene.treeRenderMultiLevel();
+    instantiateUI(scene);
+}
+
+function test(){
     let breatherScene = new Scene();
 
     let planeNode = new SceneNode(new Plane());
@@ -36,29 +61,17 @@ function main(){
 
     breatherScene.root.nodes.push(planeNode);
     breatherScene.root.nodes.push(sphereNode);
-    breatherScene.root.nodes.push(new Head());
+    //breatherScene.root.nodes.push(new Head());
 
-    let leg = new Leg();
+    /*let leg = new Leg();
     leg.rotateBy = [0, -2, 2];
-    breatherScene.root.nodes.push(leg);
+    breatherScene.root.nodes.push(leg);*/
+    breatherScene.root.nodes.push(new Octopus());
 
 
     breatherScene.treeRenderMultiLevel();
     //breatherScene.render();
     instantiateUI(breatherScene);
-
-
-    /*Experiment with multi-screen rendering success
-    let experimentalScene = new BreatherScene("second-screen");
-    experimentalScene.renderUnconditional();
-    for (let i = 0; i < 2; i++){
-        experimentalScene.zoomIn();
-    }
-
-    experimentalScene.setTestParams()
-    experimentalScene.updateTheta(45);
-    */
-    
 }
 
 window.onload = main;

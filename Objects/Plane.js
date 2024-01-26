@@ -27,30 +27,28 @@ export default class Cube extends GeometricObject{
     {
         let z = 0
         var vertices = [
-            vec4( -0.5, -0.5,  z, 1.0 ), //0
-            vec4( -0.5,  0.5,  z, 1.0 ), //1
-            vec4(  0.5,  0.5,  z, 1.0 ), //2
-            vec4(  0.5, -0.5,  z, 1.0 ) //3
+            vec4( -0.5, -0.5,  z, 1.0 ), //0 leftdown
+            vec4( -0.5,  0.5,  z, 1.0 ), //1 leftup
+            vec4(  0.5,  0.5,  z, 1.0 ), //2 rightup
+            vec4(  0.5, -0.5,  z, 1.0 ) //3 rightdown
         ];
 
         var t1 = subtract(vertices[b], vertices[a]);
         var t2 = subtract(vertices[c], vertices[b]);
         var normal = vec3(cross(t1, t2));
      
-     
-        this.points.push(vertices[a]); 
+        this.points.push(vertices[a]); //leftup
         this.normals.push(normal); 
-        this.points.push(vertices[b]); 
+        this.points.push(vertices[b]); //leftdown
         this.normals.push(normal); 
-        this.points.push(vertices[c]); 
+        this.points.push(vertices[c]); //rightdown
         this.normals.push(normal);   
-        this.points.push(vertices[a]);  
+        this.points.push(vertices[a]);  //leftup
         this.normals.push(normal); 
-        this.points.push(vertices[c]); 
+        this.points.push(vertices[c]); //rightdown
         this.normals.push(normal); 
-        this.points.push(vertices[d]); 
+        this.points.push(vertices[d]); //rightup
         this.normals.push(normal);   
-
 
     }
 

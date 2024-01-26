@@ -38,4 +38,5 @@ export default class GeometricObject{
         //this.texture = new Texture();
         self.bumpMappingOn = false;
     }
+
 }
