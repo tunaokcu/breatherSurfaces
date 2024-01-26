@@ -4,12 +4,12 @@ import ModelRenderer from "./ModelRenderer.js";
 
 
 window.onload = async () => {
-    const response = await fetch('./crate.obj');
+    const response = await fetch('./steve/minecraft_steve.obj');
     const text = await response.text();   
     let parser = new ObjParser();
     let model = parser.parse(text);
     model.constructFaces();
-    model.loadTexture("./crate.png");
+    model.loadTexture("./steve/Minecraft_steve_skin.jpg");
 
 
 

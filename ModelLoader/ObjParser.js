@@ -3,8 +3,8 @@ import Model from "./Model.js";
 export default class ObjParser{
     parse(text){
         let model = new Model();
-
-        //Assuming f lines are always specified last(if not we should make changes to this code)
+        
+        let f_lines = [];
         for (const line of text.split("\n")){
             let lineTrimmed = line.trim();
 
@@ -33,12 +33,16 @@ export default class ObjParser{
 
             //Faces
             else if (lineTrimmed[0] == "f"){
-                const [vertexIndices, textureIndices, normalIndices]  = this.parse_f(lineTrimmed);
-
-                model.vertexIndices.push(vertexIndices);
-                model.textureIndices.push(textureIndices);
-                model.normalIndices.push(normalIndices);
+                f_lines.push(lineTrimmed);
             }
+        }
+
+        for (const f_line of f_lines){
+            const [vertexIndices, textureIndices, normalIndices]  = this.parse_f(f_line);
+
+            model.vertexIndices.push(vertexIndices);
+            model.textureIndices.push(textureIndices);
+            model.normalIndices.push(normalIndices);
         }
 
         return model;
