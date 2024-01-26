@@ -230,7 +230,8 @@
                     let normal1 = object.trueNormals(u, v);
                     //normal1 = this.bumpMap(normal1, u, v);
 
-                    for (let i = 0; i < 6; i++) pointsInMesh.push(normal1);
+                    //for (let i = 0; i < 6; i++) 
+                    pointsInMesh.push(normal1);
                 }
             }
             

@@ -13,3 +13,6 @@ https://en.wikipedia.org/wiki/Hyperboloid
 
 more on uniform sampling
 https://mathoverflow.net/questions/9991/how-can-i-sample-uniformly-from-a-surface
+
+
+!Conflict between different objects returning vertices/normals in different formats. Either the arrays should be already spread or in vec form.

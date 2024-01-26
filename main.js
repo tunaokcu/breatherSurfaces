@@ -24,7 +24,8 @@ function main(){
     */
 
 
-    trueNormalTest();
+    //trueNormalTest();
+    test();
 
     /*Experiment with multi-screen rendering success
     let experimentalScene = new BreatherScene("second-screen");
@@ -38,6 +39,14 @@ function main(){
     */
     
 }
+
+function sphereTest(){
+    let scene = new Scene();
+    scene.root.nodes.push(new SceneNode(new Sphere()));
+    scene.treeRenderMultiLevel();
+    instantiateUI(scene);     
+}
+
 function trueNormalTest(){
     let scene = new Scene();
     scene.root.nodes.push(new SceneNode(new Breather()));

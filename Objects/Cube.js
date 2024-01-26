@@ -55,14 +55,15 @@ export default class Cube extends GeometricObject{
     }
 
     getSolidVertices(){
-        return this.getVertices();
+        return this.getVertices() ;
     }
     //TODO should be lines not points
     getVertices(){
-        return this.points;
+        console.log(flatten(this.points))
+        return flatten(this.points);
     }
 
     getVertexNormals(){
-        return this.normals;
+        return flatten(this.normals);
     }
 }
