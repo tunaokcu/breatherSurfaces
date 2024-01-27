@@ -50,10 +50,14 @@ export default class Model{
     }
 
     hasTexture(){ return (this.texture != undefined && this.texture != null)}
-    loadTexture(link){
+    async loadTexture(link){
         var image = new Image();
         image.src =  link;
 
         this.texture = image
+
+        return new Promise((resolve, reject) => {
+            this.texture.onload  =  () => (resolve("loaded"));
+        })
     }
 }

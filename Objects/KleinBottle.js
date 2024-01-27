@@ -1,4 +1,4 @@
-import ParametricSurface from "./ParametricSurface.js";
+import ParametricSurface from "./Object Components/ParametricSurface.js";
 
 
 //https://virtualmathmuseum.org/Surface/klein_bottle/klein_bottle.html#:~:text=Klein%20Bottle%20Hermann%20Karcher%20Parametric,See%20the%20Mobius%20Strip%20first.

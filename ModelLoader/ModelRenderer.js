@@ -54,8 +54,8 @@ export default class ModelRenderer{
         this.camera = new Camera(gl, program, -10, 10, 6, 0, 0.0,  -30.0, 30.0, 30.0, -30.0, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0))
         this.camera.theta += Math.PI / 2
         //this.camera.phi += 1;
-        for (let i = 0; i < 3; i++){
-            let x;//this.camera.zoomIn();
+        for (let i = 0; i < 4; i++){
+            this.camera.zoomIn();
         }
         this.camera.updateMatrices();
         this.camera.setShaderMatrices(gl);
@@ -108,7 +108,7 @@ export default class ModelRenderer{
         gl.vertexAttribPointer( this.vPosition, 3, gl.FLOAT, false, 0, 0 );
         gl.enableVertexAttribArray( this.vPosition );
 
-
+        console.log("rendered");
         this.rerender(model);
     }
 

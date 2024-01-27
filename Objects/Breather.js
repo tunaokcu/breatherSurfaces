@@ -1,4 +1,4 @@
-import ParametricSurface from "./ParametricSurface.js";
+import ParametricSurface from "./Object Components/ParametricSurface.js";
 import {flatten, vec4, cross, vec3} from "../Common/MV.js";
 
 export default class Breather extends ParametricSurface{

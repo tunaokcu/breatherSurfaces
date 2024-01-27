@@ -1,5 +1,5 @@
 import Cube from "../Objects/Cube.js";
-import SceneNode from "../Objects/SceneNode.js";
+import SceneNode from "../Objects/Object Components/SceneNode.js";
 import LowerLeg from "./Leg/LowerLeg.js";
 import MiddleLeg from "./Leg/MiddleLeg.js";
 import UpperLeg from "./Leg/UpperLeg.js";

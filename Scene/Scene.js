@@ -4,7 +4,7 @@ import {initShaders} from "../Common/initShaders.js";
 import Camera from "./Camera.js";
 import AggregateLight from "./AggregateLight.js";
 import Sphere from "../Objects/Sphere.js";
-import SceneNode from "../Objects/SceneNode.js";
+import SceneNode from "../Objects/Object Components/SceneNode.js";
 
 const MAX_VERTICES = 10000000;
 
@@ -58,7 +58,6 @@ export default class Scene{
         this.renderState = "solid";
         this.renderStateChanged = true;
 
-        this.tree = [];
         this.root = new SceneNode(); //Placeholder
         //TODO implement this and light nodes
         this.currentCamera = this.camera;//new CameraNode(new Camera(this.gl, this.program, -10, 10, 6, 0, 0.0,  -30.0, 30.0, 30.0, -30.0, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0)))
@@ -84,10 +83,12 @@ export default class Scene{
         }
     }
 
-    treeTraversal(node, MV, offset){
+    treeTraversal(node, MV){
         if (node != null || node != undefined){
             //Draw only if the node has an object. Nodes can also just be containers for other nodes.
-            if (node.object != null || node.object != undefined){ this.renderNode(node, node.getInstanceMatrix(MV));}
+            if (node.object != null || node.object != undefined){ 
+                console.log("rendering", node)
+                this.renderNode(node, node.getInstanceMatrix(MV));}
             
             for (const childNode of node.nodes){                
                 this.treeTraversal(childNode, node.getModelViewMatrix(MV))
