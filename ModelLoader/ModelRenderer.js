@@ -67,13 +67,9 @@ export default class ModelRenderer{
         this.gl = gl;
     }
 
-    render(model){
-        let gl = this.gl;
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        this.lighting.environmentLight.calculateAndSendProducts(gl, new Material());
-
-        if (model.hasTexture()){
+    drawTexture(model){
+            let gl = this.gl;
+            
             // create and bind texture
             let texture = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -91,11 +87,22 @@ export default class ModelRenderer{
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
             }
 
+            console.log(flatten(model.trianglesTexture));
+
             gl.bindBuffer( gl.ARRAY_BUFFER, this.uvBuffer );
             gl.bufferData(gl.ARRAY_BUFFER, flatten(model.trianglesTexture), gl.STATIC_DRAW);
             gl.vertexAttribPointer( this.uvPosition, 2, gl.FLOAT, false, 0, 0 );
             gl.enableVertexAttribArray( this.uvPosition );
+    }
 
+    render(model){
+        let gl = this.gl;
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        this.lighting.environmentLight.calculateAndSendProducts(gl, new Material());
+
+        if (model.hasTexture()){
+            this.drawTexture(model);
         }
 
         gl.bindBuffer( gl.ARRAY_BUFFER, this.nBuffer );
@@ -118,10 +125,11 @@ export default class ModelRenderer{
 
         gl.drawArrays( gl.TRIANGLES, 0, model.trianglesNormal.length * 3);
         
-        this.camera.theta += Math.PI * 3 / 180;
+        this.camera.theta += Math.PI / 180;
         this.camera.updateMatrices();
         this.camera.setShaderMatrices(gl);
-        setTimeout(() => requestAnimationFrame(() => this.rerender(model)), 1);
+        setTimeout(() => requestAnimationFrame(() => this.rerender(model)), 3);
+        
     }
 
 }

@@ -1,5 +1,4 @@
 import Material from "./Material.js";
-import Texture from "./Texture.js";
 
 /*  The code below examplifies a makeshift abstract class. 
   
@@ -39,4 +38,8 @@ export default class GeometricObject{
         self.bumpMappingOn = false;
     }
 
+    //No texture by default
+    hasTexture(){
+        return false;    
+    }
 }

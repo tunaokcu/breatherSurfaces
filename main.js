@@ -13,6 +13,7 @@ import Head from "./Octopus/Head.js";
 import Leg from "./Octopus/Leg.js";
 import Octopus from "./Octopus/Octopus.js";
 import KleinBottle from "./Objects/KleinBottle.js";
+import TexturedCube from "./Objects/TexturedCube/TexturedCube.js";
 
 function main(){
     //!Our problem with vertex rendering can be seen clearly here
@@ -23,8 +24,8 @@ function main(){
     cubeScene.renderUnconditional();
     */
 
-
     test();
+    //test();
 
     /*Experiment with multi-screen rendering success
     let experimentalScene = new BreatherScene("second-screen");
@@ -38,6 +39,14 @@ function main(){
     */
     
 }
+
+function textureTest(){
+    let scene = new Scene();
+    scene.root.nodes.push(new SceneNode(new TexturedCube("/Objects/TexturedCube/steve-head.png")));
+    scene.treeRenderMultiLevel();
+    instantiateUI(scene);  
+}
+
 function trueNormalTest(){
     let scene = new Scene();
     scene.root.nodes.push(new SceneNode(new Breather()));
@@ -66,26 +75,23 @@ function test(){
     let planeNode = new SceneNode(new Plane());
     planeNode.scaleBy = [10, 10, 10];
     planeNode.translateBy = [0 , 0, 3];
-    breatherScene.tree.push(planeNode);
+
+    let steve = new SceneNode(new TexturedCube("/Objects/TexturedCube/steve-head.png"))
+    breatherScene.root.nodes.push(steve);
 
     let sphereNode = new SceneNode(new Sphere());
     sphereNode.scaleBy = [2,2,2];//[0.3, 0.3, 0.3];
     sphereNode.translateBy = [5, 0, 0]
     sphereNode.rotateBy = [90, 1, 1]
-    breatherScene.tree.push(sphereNode);
 
     breatherScene.root.nodes.push(planeNode);
     breatherScene.root.nodes.push(sphereNode);
-    //breatherScene.root.nodes.push(new Head());
 
-    /*let leg = new Leg();
-    leg.rotateBy = [0, -2, 2];
-    breatherScene.root.nodes.push(leg);*/
-    breatherScene.root.nodes.push(new Octopus());
+    //breatherScene.root.nodes.push(new Octopus());
 
+    instantiateCharacterControls(breatherScene, steve);
 
     breatherScene.treeRenderMultiLevel();
-    //breatherScene.render();
     instantiateUI(breatherScene);
 }
 
@@ -147,6 +153,41 @@ function instantiateUI(scene){
     // instantiateBumpMappingButton(scene);
     instantiateLightUI(scene);
     //instantiateNormalToggle(scene);
+}
+
+function instantiateCharacterControls(scene, charNode){
+    document.addEventListener("keydown", (event) => keydownHandler(event, scene, charNode), false);
+    document.addEventListener("keyup", (event) => keyupHandler(event, scene, charNode), false)
+}
+
+//!!!!!!! BUG! THE TRANSLATION IS APPLIED ACCORDIN TO CAMERA ORIENTATION
+let speed = 0.3;
+function keydownHandler(event, scene, charNode){
+    var keyCode = event.keyCode;
+    
+    let dir;
+    
+    //Translation is very weird
+    switch (keyCode) {
+        case 68: //d
+            dir = [1, 0, 0]
+            break;        
+        case 83: //s
+            dir = [0, 0, -1]
+            break;
+        case 65: //a
+            dir = [-1, 0, 0]
+            break;
+        case 87: //w
+            dir = [0, 0, 1]
+            break;
+        default:
+            return;
+    }
+    let offset = dir.map((coord) => coord*speed)
+
+    charNode.translateBy = charNode.translateBy.map((e, i) => e + offset[i])
+    scene.treeRenderMultiLevel();
 }
 
 

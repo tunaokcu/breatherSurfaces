@@ -8,8 +8,17 @@ export default class Material{
         this.materialSpecular = materialSpecular;
         this.materialShininess = materialShininess;
 
-        this.setTestValues2();
+        this.setLimeGreen();
     }
+
+    //!DOESNT WORK
+    setIdentity(){
+        this.materialAmbient = vec4(1.0, 1.0, 1.0, 0);
+        this.materialDiffuse = vec4(1.0, 1.0, 1.0, 0);
+        this.materialSpecular = vec4(1.0, 1.0, 1.0, 1.0);
+        this.materialShininess = vec4(1.0, 1.0, 1.0, 1.0);
+    }
+
     setTestValues(){
         var octopusColor = vec4(86.0/255, 90.0/255, 100.0/255, 0);
         this.materialAmbient = octopusColor;

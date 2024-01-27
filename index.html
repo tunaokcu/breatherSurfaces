@@ -18,6 +18,11 @@ attribute vec3 vNormal;
 uniform mat3 vNormals -> vNormal1, vNormal2, vNormal3
 */
 
+
+// texture coordinates per vertex
+attribute vec2 a_texcoord;
+varying vec2 v_texcoord;
+
 //Added
 uniform float isSolid;
 
@@ -62,7 +67,8 @@ void main(){
     fColor = ambient + diffuse +specular;
     fColor.a = 1.0;
   
-
+    // per vertex texture coordinates are passed to the fragment shader
+    v_texcoord = a_texcoord;
   // per vertex texture coordinates are passed to the fragment shader
   //v_texcoord = a_texcoord;
   //vHasTexture = aHasTexture;
@@ -76,8 +82,20 @@ precision mediump float;
 varying vec4 fColor;
 //varying vec3 varyingNormal;
 
+// per fragment texture coordinates that come from the vertex shader
+varying vec2 v_texcoord;
+
+// uniform texture that contains the image
+uniform sampler2D u_texture;
+
 void main(){
-    gl_FragColor = fColor;
+    gl_FragColor = texture2D(u_texture, v_texcoord);
+
+    //Color ONLY if this is white, i.e untextured.
+    //This iteration of the shader will only have flat shaded textured objects.
+    if (texture2D(u_texture, v_texcoord) == vec4(1.0, 1.0, 1.0, 1.0)){
+      gl_FragColor *= fColor;
+    }
 }
 </script>
 

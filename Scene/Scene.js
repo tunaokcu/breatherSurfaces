@@ -50,10 +50,40 @@ export default class Scene{
         this.renderState = "solid";
         this.renderStateChanged = true;
 
-        this.tree = [];
         this.root = new SceneNode(); //Placeholder
         //TODO implement this and light nodes
         this.currentCamera = this.camera;//new CameraNode(new Camera(this.gl, this.program, -10, 10, 6, 0, 0.0,  -30.0, 30.0, 30.0, -30.0, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0)))
+
+        //Identity texture
+        let gl = this.gl;
+        
+
+        this.IDENTITY_TEXTURE = gl.createTexture();
+        //this.disableTextures();
+
+        // Texture
+        // here we create buffer and attribute pointer for texture coordinates
+        this.uvBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+                
+        // a_texcoord is the name of the attribute inside vertex shader
+        this.uvPosition = gl.getAttribLocation(this.program, "a_texcoord");
+
+        // each attribute is made of 2 floats
+        gl.vertexAttribPointer(this.uvPosition, 2, gl.FLOAT, false, 0, 0) ;
+        gl.enableVertexAttribArray(this.uvPosition); 
+
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    }
+
+    WHITE = new Uint8Array([255, 255, 255, 255]);
+    //Disable by sending the identity texture
+    disableTextures(){
+        let gl = this.gl;
+
+    
+        gl.bindTexture(gl.TEXTURE_2D, this.IDENTITY_TEXTURE);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, this.WHITE);
     }
 
     treeRenderMultiLevel(){
@@ -84,7 +114,63 @@ export default class Scene{
         }
     }
 
-    renderNode(node, MV){
+
+
+    //Local flatten since the MV one isn't working for some reason
+    flatten(arr){
+        return arr;
+        console.log(arr)
+        let res = [];
+        for (const a of arr){
+            res = res.concat(...a);
+        }
+        return new Float32Array(res);
+    }
+
+    drawTexture(model){
+        console.log("called");
+
+        let gl = this.gl;
+        
+        // create and bind texture
+        let texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+
+
+
+        // Draw texture
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, model.texture);
+
+        if (imageIsPowerOfTwo(model.texture)){
+            gl.generateMipmap(gl.TEXTURE_2D);
+
+
+        } else{
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        }
+
+        gl.bindBuffer( gl.ARRAY_BUFFER, this.uvBuffer );
+        gl.bufferData(gl.ARRAY_BUFFER, this.flatten(model.getUvs()), gl.STATIC_DRAW);
+        gl.vertexAttribPointer( this.uvPosition, 2, gl.FLOAT, false, 0, 0 );
+        gl.enableVertexAttribArray( this.uvPosition );
+    }
+
+    async renderNode(node, MV){
+        if (node.object.hasTexture()){
+            if (!node.object.textureIsLoaded()){
+                node.object.loadTexture().then(() => this.drawTexture(node.object)) //POSSIBLE SCOPE ISSUE
+            }
+            else{
+                this.drawTexture(node.object);
+            }
+
+        }
+        else{
+            this.disableTextures();
+
+        }
         //Send light values to GPU  
         this.lighting.sendLightValues(this.gl, node.object);
 
@@ -126,6 +212,11 @@ export default class Scene{
 
         //Draw
         this.gl.drawArrays(this.gl.TRIANGLES, 0, node.object.vertices.length);
+
+        /*
+        if (node.object.hasTexture()){
+            //clean up
+        } */
     }
 
 
@@ -313,3 +404,12 @@ export default class Scene{
     */
 
 }
+
+function imageIsPowerOfTwo(image){
+    return isPowerOf2(image.width) && isPowerOf2(image.height)
+   }
+   
+   //Source: https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
+   function isPowerOf2(value) {
+       return (value & (value - 1)) === 0;
+     }
