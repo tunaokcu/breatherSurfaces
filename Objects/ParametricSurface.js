@@ -29,10 +29,58 @@
                 throw new Error("parametricFunction method must be implemented");
             };
         }
+
         getSolidVertices(){
-            return this.sampleSolid();
+            return this.experimentalSolid()
+            //return this.sampleSolid();
         }
 
+        experimentalSolid(){
+            let object = this;
+
+            let vertices = [];
+
+            for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
+                let uNext = u + object.uDelta < object.uEnd ? u + object.uDelta : object.uStart;//u + object.uDelta - object.uEnd;
+
+                for(let v = object.vStart; v < object.vEnd; v += object.vDelta){
+                    let vNext = v + object.vDelta < object.vEnd ? v + object.vDelta : object.vStart;//v + object.vDelta - object.vEnd;
+
+                    vertices.push(object.parametricFunction(u, v));
+                    vertices.push(object.parametricFunction(uNext, v));
+                    vertices.push(object.parametricFunction(u, vNext));
+                    vertices.push(object.parametricFunction(u, vNext));
+                    vertices.push(object.parametricFunction(uNext, v));
+                    vertices.push(object.parametricFunction(uNext, vNext));
+                }
+            }
+            return vertices
+        }
+
+        experimentalNormals(){
+            let object = this;
+
+            let normals = [];
+
+            for (let u = object.uStart; u < object.uEnd; u += object.uDelta){
+                let uNext = u + object.uDelta < object.uEnd ? u + object.uDelta : object.uStart;//u + object.uDelta - object.uEnd;
+
+                for(let v = object.vStart; v < object.vEnd; v += object.vDelta){
+                    let vNext = v + object.vDelta < object.vEnd ? v + object.vDelta : object.vStart;//v + object.vDelta - object.vEnd;
+
+                    normals.push(object.trueNormals(u, v));
+                    normals.push(object.trueNormals(uNext, v));
+                    normals.push(object.trueNormals(u, vNext));
+                    normals.push(object.trueNormals(u, vNext));
+                    normals.push(object.trueNormals(uNext, v));
+                    normals.push(object.trueNormals(uNext, vNext));
+                }
+            }
+
+            return normals
+        }
+
+        
         //? WHY ARE THERE TWO
         /*
         getTangents(){
@@ -222,6 +270,7 @@
 
         //faulty
         getTrueNormals(){
+            return this.experimentalNormals();
             let object = this;
             let pointsInMesh = [];
 

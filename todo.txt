@@ -28,3 +28,6 @@ Textures
 
 Camera
 1)Quaternions?
+
+Optimization
+1)Replace every vertex using vec4 with vec3

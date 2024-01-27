@@ -1,5 +1,6 @@
 import {flatten, vec3, mat4, lookAt, ortho} from "../Common/MV.js";
 
+//!THIS IS ORTHOGRAPHIC
 export default class Camera{
     constructor(gl, program, near=-10, far=10, radius=6, theta=0, phi=0.0,  left=-0.5, right=0.5, ytop=0.5, bottom=-0.5, at=vec3(0.0, 0.0, 0.0), up=vec3(0.0, 1.0, 0.0)){
         this.setMatrices(near, far, radius, theta, phi, left, right, ytop, bottom, at, up);

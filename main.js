@@ -14,6 +14,7 @@ import Leg from "./Octopus/Leg.js";
 import Octopus from "./Octopus/Octopus.js";
 import KleinBottle from "./Objects/KleinBottle.js";
 import TexturedCube from "./Objects/TexturedCube/TexturedCube.js";
+import Hemisphere from "./Objects/Hemisphere.js";
 
 function main(){
     //!Our problem with vertex rendering can be seen clearly here
@@ -24,7 +25,7 @@ function main(){
     cubeScene.renderUnconditional();
     */
 
-    test();
+    breatherTest();
     //test();
 
     /*Experiment with multi-screen rendering success
@@ -40,6 +41,13 @@ function main(){
     
 }
 
+function breatherTest(){
+    let scene = new Scene();
+    scene.root.nodes.push(new SceneNode(new Breather()));
+    scene.normalType = "trueNormals"
+    scene.treeRenderMultiLevel();
+    instantiateUI(scene);
+}
 function textureTest(){
     let scene = new Scene();
     scene.root.nodes.push(new SceneNode(new TexturedCube("/Objects/TexturedCube/steve-head.png")));
@@ -65,6 +73,13 @@ function kleinTest(){
 function lightingTest(){
     let scene = new Scene();
     scene.root.nodes.push(new SceneNode(new Cube()));
+    scene.treeRenderMultiLevel();
+    instantiateUI(scene);
+}
+
+function hemisphereTest(){
+    let scene = new Scene();
+    scene.root.nodes.push(new SceneNode(new Hemisphere()));
     scene.treeRenderMultiLevel();
     instantiateUI(scene);
 }
@@ -157,7 +172,7 @@ function instantiateUI(scene){
 
 function instantiateCharacterControls(scene, charNode){
     document.addEventListener("keydown", (event) => keydownHandler(event, scene, charNode), false);
-    document.addEventListener("keyup", (event) => keyupHandler(event, scene, charNode), false)
+    document.addEventListener("keyup", (event) => keyupHandler(event, scene, charNode), false) //TODO
 }
 
 //!!!!!!! BUG! THE TRANSLATION IS APPLIED ACCORDIN TO CAMERA ORIENTATION
@@ -170,13 +185,13 @@ function keydownHandler(event, scene, charNode){
     //Translation is very weird
     switch (keyCode) {
         case 68: //d
-            dir = [1, 0, 0]
+            dir = [-1, 0, 0]
             break;        
         case 83: //s
             dir = [0, 0, -1]
             break;
         case 65: //a
-            dir = [-1, 0, 0]
+            dir = [1, 0, 0]
             break;
         case 87: //w
             dir = [0, 0, 1]

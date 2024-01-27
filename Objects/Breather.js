@@ -2,12 +2,15 @@ import ParametricSurface from "./ParametricSurface.js";
 import {flatten, vec4, cross, vec3} from "../Common/MV.js";
 
 export default class Breather extends ParametricSurface{
+
     constructor(uStart=-4*Math.PI, uEnd=4*Math.PI, uDelta=90*Math.PI/360, vStart=-4*Math.PI, vEnd=4*Math.PI, vDelta=90*Math.PI/360, aa = 0.9){
         if(!(aa < 1 && aa > 0)){
             throw Error("aa should be within range (0, 1)")
         }
         super(uStart, uEnd, uDelta, vStart, vEnd, vDelta);
         this.aa = aa;
+
+        this.setTestParams();
     }
     
     parametricFunction(u, v){
@@ -18,6 +21,18 @@ export default class Breather extends ParametricSurface{
         let res = normals(this.aa, u, v, breatherW(this.aa));
 
         return res
+    }
+
+    setTestParams(){
+        this.aa = 0.4;
+        this.uStart = -14;
+        this.uEnd = 14;
+        this.vStart = -37.4;
+        this.vEnd = 37.4;
+
+        this.uDelta = 30*Math.PI/360
+        this.vDelta = 30*Math.PI/360
+
     }
 }
 

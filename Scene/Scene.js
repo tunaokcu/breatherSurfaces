@@ -59,7 +59,7 @@ export default class Scene{
         
 
         this.IDENTITY_TEXTURE = gl.createTexture();
-        //this.disableTextures();
+        this.disableTextures(); //textures are disabled by default
 
         // Texture
         // here we create buffer and attribute pointer for texture coordinates
@@ -115,18 +115,6 @@ export default class Scene{
     }
 
 
-
-    //Local flatten since the MV one isn't working for some reason
-    flatten(arr){
-        return arr;
-        console.log(arr)
-        let res = [];
-        for (const a of arr){
-            res = res.concat(...a);
-        }
-        return new Float32Array(res);
-    }
-
     drawTexture(model){
         console.log("called");
 
@@ -143,8 +131,6 @@ export default class Scene{
 
         if (imageIsPowerOfTwo(model.texture)){
             gl.generateMipmap(gl.TEXTURE_2D);
-
-
         } else{
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -152,7 +138,7 @@ export default class Scene{
         }
 
         gl.bindBuffer( gl.ARRAY_BUFFER, this.uvBuffer );
-        gl.bufferData(gl.ARRAY_BUFFER, this.flatten(model.getUvs()), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(model.getUvs()), gl.STATIC_DRAW);
         gl.vertexAttribPointer( this.uvPosition, 2, gl.FLOAT, false, 0, 0 );
         gl.enableVertexAttribArray( this.uvPosition );
     }
@@ -160,17 +146,16 @@ export default class Scene{
     async renderNode(node, MV){
         if (node.object.hasTexture()){
             if (!node.object.textureIsLoaded()){
-                node.object.loadTexture().then(() => this.drawTexture(node.object)) //POSSIBLE SCOPE ISSUE
+                node.object.loadTexture().then(() => this.drawTexture(node.object)) //TODO somehow make this wait without cascading awaits 
             }
             else{
                 this.drawTexture(node.object);
             }
-
-        }
+        }/*
         else{
             this.disableTextures();
-
-        }
+        }*/
+        
         //Send light values to GPU  
         this.lighting.sendLightValues(this.gl, node.object);
 
@@ -213,10 +198,10 @@ export default class Scene{
         //Draw
         this.gl.drawArrays(this.gl.TRIANGLES, 0, node.object.vertices.length);
 
-        /*
+        
         if (node.object.hasTexture()){
-            //clean up
-        } */
+            this.disableTextures();
+        } 
     }
 
 
@@ -230,7 +215,6 @@ export default class Scene{
         let stateFloat =  Number(this.renderState ==="solid");
         this.gl.uniform1f( this.gl.getUniformLocation(this.program, "isSolid"), stateFloat); 
 
-        //!This is rendering stuff
         if (this.renderState === "solid"){
             this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
             this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(this.normals), this.gl.STATIC_DRAW );
