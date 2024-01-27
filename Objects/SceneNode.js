@@ -1,4 +1,4 @@
-import { scale4, rotate, translate, mat4, mult } from "../../Common/MV.js";
+import { scale4, rotate, translate, mat4, mult } from "../Common/MV.js";
 
 export default class SceneNode{
     nodes = []; //TODO make this object itself iterable

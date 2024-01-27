@@ -1,5 +1,5 @@
     import GeometricObject from "./GeometricObject.js";
-    import {flatten, vec4, vec3, subtract, normalize, cross, negate} from "../../Common/MV.js";
+    import {flatten, vec4, vec3, subtract, normalize, cross, negate} from "../Common/MV.js";
     //import bump from "./BumpMapGenerator.JS" 
 
         
@@ -230,8 +230,7 @@
                     let normal1 = object.trueNormals(u, v);
                     //normal1 = this.bumpMap(normal1, u, v);
 
-                    //for (let i = 0; i < 6; i++) 
-                    pointsInMesh.push(normal1);
+                    for (let i = 0; i < 6; i++) pointsInMesh.push(normal1);
                 }
             }
             

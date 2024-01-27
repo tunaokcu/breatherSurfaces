@@ -1,4 +1,4 @@
-import {flatten, vec4} from "../../Common/MV.js";
+import {flatten, vec4} from "../Common/MV.js";
 
 
 export default class Material{

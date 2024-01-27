@@ -1,5 +1,5 @@
 
-import GeometricObject from "./Object Components/GeometricObject.js";
+import GeometricObject from "./GeometricObject.js";
 import {flatten, subtract, cross, vec3, vec4} from "../Common/MV.js";
 
 //Should extend GeometricObject or something of the sort(not high priority, not even relevant to the assignment)
@@ -55,15 +55,14 @@ export default class Cube extends GeometricObject{
     }
 
     getSolidVertices(){
-        return this.getVertices() ;
+        return this.getVertices();
     }
     //TODO should be lines not points
     getVertices(){
-        console.log(flatten(this.points))
-        return flatten(this.points);
+        return this.points;
     }
 
     getVertexNormals(){
-        return flatten(this.normals);
+        return this.normals;
     }
 }

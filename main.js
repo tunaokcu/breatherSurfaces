@@ -7,14 +7,12 @@ import TestScene from "./Scene/TestScene.js";
 import Breather from "./Objects/Breather.js";
 import Sphere from "./Objects/Sphere.js";
 import Plane from "./Objects/Plane.js";
-import SceneNode from "./Objects/Object Components/SceneNode.js"
+import SceneNode from "./Objects/SceneNode.js"
 
 import Head from "./Octopus/Head.js";
 import Leg from "./Octopus/Leg.js";
 import Octopus from "./Octopus/Octopus.js";
 import KleinBottle from "./Objects/KleinBottle.js";
-import UpperLeg from "./Octopus/Leg/UpperLeg.js";
-import LowerLeg from "./Octopus/Leg/LowerLeg.js";
 
 function main(){
     //!Our problem with vertex rendering can be seen clearly here
@@ -26,7 +24,6 @@ function main(){
     */
 
 
-    //trueNormalTest();
     test();
 
     /*Experiment with multi-screen rendering success
@@ -41,14 +38,6 @@ function main(){
     */
     
 }
-
-function sphereTest(){
-    let scene = new Scene();
-    scene.root.nodes.push(new SceneNode(new Sphere()));
-    scene.treeRenderMultiLevel();
-    instantiateUI(scene);     
-}
-
 function trueNormalTest(){
     let scene = new Scene();
     scene.root.nodes.push(new SceneNode(new Breather()));
@@ -74,18 +63,19 @@ function lightingTest(){
 function test(){
     let breatherScene = new Scene();
 
-    /*
     let planeNode = new SceneNode(new Plane());
     planeNode.scaleBy = [10, 10, 10];
     planeNode.translateBy = [0 , 0, 3];
+    breatherScene.tree.push(planeNode);
 
     let sphereNode = new SceneNode(new Sphere());
     sphereNode.scaleBy = [2,2,2];//[0.3, 0.3, 0.3];
     sphereNode.translateBy = [5, 0, 0]
     sphereNode.rotateBy = [90, 1, 1]
+    breatherScene.tree.push(sphereNode);
 
     breatherScene.root.nodes.push(planeNode);
-    breatherScene.root.nodes.push(sphereNode);*/
+    breatherScene.root.nodes.push(sphereNode);
     //breatherScene.root.nodes.push(new Head());
 
     /*let leg = new Leg();
@@ -93,7 +83,6 @@ function test(){
     breatherScene.root.nodes.push(leg);*/
     breatherScene.root.nodes.push(new Octopus());
 
-    console.log(breatherScene.root.nodes);
 
     breatherScene.treeRenderMultiLevel();
     //breatherScene.render();

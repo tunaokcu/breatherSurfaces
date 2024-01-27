@@ -1,4 +1,4 @@
-import SceneNode from "../../Objects/Object Components/SceneNode.js";
+import SceneNode from "../../Objects/SceneNode.js";
 import Cube from "../../Objects/Cube.js";
 
 export default class UpperLeg extends SceneNode{

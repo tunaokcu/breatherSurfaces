@@ -4,9 +4,7 @@ import {initShaders} from "../Common/initShaders.js";
 import Camera from "./Camera.js";
 import AggregateLight from "./AggregateLight.js";
 import Sphere from "../Objects/Sphere.js";
-import SceneNode from "../Objects/Object Components/SceneNode.js";
-
-const MAX_VERTICES = 10000000;
+import SceneNode from "../Objects/SceneNode.js";
 
 export default class Scene{
     canvas;
@@ -40,13 +38,7 @@ export default class Scene{
         this.gl.enable(this.gl.DEPTH_TEST);
 
         this.vertexBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
-        this.gl.bufferData(this.gl.ARRAY_BUFFER,MAX_VERTICES*4, this.gl.STATIC_DRAW );
-
         this.normalBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
-        this.gl.bufferData(this.gl.ARRAY_BUFFER,MAX_VERTICES*3, this.gl.STATIC_DRAW );
-
         this.vPosition = this.gl.getAttribLocation( this.program, "vPosition" );
         this.vNormal = this.gl.getAttribLocation( this.program, "vNormal" );
 
@@ -58,6 +50,7 @@ export default class Scene{
         this.renderState = "solid";
         this.renderStateChanged = true;
 
+        this.tree = [];
         this.root = new SceneNode(); //Placeholder
         //TODO implement this and light nodes
         this.currentCamera = this.camera;//new CameraNode(new Camera(this.gl, this.program, -10, 10, 6, 0, 0.0,  -30.0, 30.0, 30.0, -30.0, vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0)))
@@ -74,9 +67,6 @@ export default class Scene{
         //Send camera
         this.currentCamera.setProjectionMatrix(this.gl);
 
-        //Initialize global vertex offset to 0
-        this.offset = 0;
-
         //Traverse tree
         for (const childNode of this.root.nodes){
             this.treeTraversal(childNode, this.currentCamera.modelViewMatrix)
@@ -86,9 +76,7 @@ export default class Scene{
     treeTraversal(node, MV){
         if (node != null || node != undefined){
             //Draw only if the node has an object. Nodes can also just be containers for other nodes.
-            if (node.object != null || node.object != undefined){ 
-                console.log("rendering", node)
-                this.renderNode(node, node.getInstanceMatrix(MV));}
+            if (node.object != null || node.object != undefined){ this.renderNode(node, node.getInstanceMatrix(MV));}
             
             for (const childNode of node.nodes){                
                 this.treeTraversal(childNode, node.getModelViewMatrix(MV))
@@ -105,7 +93,7 @@ export default class Scene{
 
         //Calculate the vertices and store them in the node
         if (node.object.vertices == null || node.object.vertices == undefined){
-            node.object.vertices = flatten(node.object.getSolidVertices());
+            node.object.vertices = node.object.getSolidVertices();
         }
 
         //Calculate the normals and store them in the node
@@ -120,34 +108,24 @@ export default class Scene{
         }
 
 
-        //Buffer ONLY if they are not buffered already
-        if (node.offset == null || node.offset == undefined){
-            console.log(node.object.vertices)
-            node.offset = node.object.vertices.length / 4; //Assuming flattened vertices
 
-            //!THE ORDER MATTERS... WHY? (if we buffer the vertices first then the normals it doesn't work)
-            //Buffer the normals
-            this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
-            this.gl.bufferSubData( this.gl.ARRAY_BUFFER, 3*this.offset, flatten(node.object.normals));
-            this.gl.vertexAttribPointer( this.vNormal, 3, this.gl.FLOAT, false, 0, 0 );
-            this.gl.enableVertexAttribArray( this.vNormal );
+        //!THE ORDER MATTERS... WHY? (if we buffer the vertices first then the normals it doesn't work)
+        //Buffer the normals
+        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.normalBuffer );
+        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(node.object.normals), this.gl.STATIC_DRAW );
+        this.gl.vertexAttribPointer( this.vNormal, 3, this.gl.FLOAT, false, 0, 0 );
+        this.gl.enableVertexAttribArray( this.vNormal );
 
-
-            //Buffer the vertices
-            this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
-            this.gl.bufferSubData( this.gl.ARRAY_BUFFER, 4*this.offset, flatten(node.object.vertices));
-            this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
-            this.gl.enableVertexAttribArray( this.vPosition );
-        }
+        //Buffer the vertices
+        this.gl.bindBuffer( this.gl.ARRAY_BUFFER, this.vertexBuffer );
+        this.gl.bufferData( this.gl.ARRAY_BUFFER, flatten(node.object.vertices), this.gl.STATIC_DRAW );
+        this.gl.vertexAttribPointer( this.vPosition, 4, this.gl.FLOAT, false, 0, 0 );
+        this.gl.enableVertexAttribArray( this.vPosition );
     
 
 
         //Draw
-        console.log(node, "\n", node.offset);
-        this.gl.drawArrays(this.gl.TRIANGLES, this.offset, node.offset);
-        
-        //Update offset
-        this.offset += node.object.vertices.length;
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, node.object.vertices.length);
     }
 
 

@@ -1,5 +1,5 @@
 
-import GeometricObject from "./Object Components/GeometricObject.js";
+import GeometricObject from "./GeometricObject.js";
 import {flatten, subtract, cross, vec3, vec4} from "../Common/MV.js";
 
 //Should extend GeometricObject or something of the sort(not high priority, not even relevant to the assignment)

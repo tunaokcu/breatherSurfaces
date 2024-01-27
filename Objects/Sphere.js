@@ -1,4 +1,4 @@
-import ParametricSurface from "./Object Components/ParametricSurface.js";
+import ParametricSurface from "./ParametricSurface.js";
 import {vec4} from "../Common/MV.js";
 
 export default class Sphere extends ParametricSurface{
